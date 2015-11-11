@@ -21,7 +21,6 @@ val turn : grid -> coord -> grid
 
 val continue_game : grid -> bool
 
-
 type fleet = (ship * coord list) list
 
 type dir = Up | Down | Left | Right
