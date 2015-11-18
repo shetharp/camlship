@@ -2,7 +2,7 @@
 
 open Grid
 
-type player = {name: string; own_grid: grid; own_fleet opponent: player; ai: bool}
+type player = {name: string; own_grid: grid; own_fleet : fleet ; opponent: player; ai: bool}
 
 type game_state = player * player
 
