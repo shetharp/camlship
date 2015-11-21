@@ -26,31 +26,39 @@ type grid = (terrain * tilestate) list list
  * 1 is the leftmost, 2 is the next column, and so on*)
 type coord = char * int
 
+(* List of ships along with their type and the number of remaining unhit
+ * pieces that that ship. *)
+type fleet = (ship * coord list) list
+
+(* Directions that the ship can placed*)
+type dir = Up | Down | Left | Right
+
+type player = Player1 of string | Player2 of string
+
+type side = {board : grid; ships : fleet}
+
+type gamestate = side * side
+
+type event = Victory of player | Sunk of ship |
+
 (* Returns a new grid option with the action updated at that coord and that
  * new action passed back in the tuple. If coord is out of range then
- * return None for the action option and return the original grid. *)
-val turn : grid -> coord -> tilestate option * grid
+ * return Empty for the action option and return the original grid. *)
+val turn : gamestate -> coord -> player -> tilestate * gamestate
 
 (* Returns true if there are no ships remaining on the board that have
  * not been destroyed. Thus the game will end *)
-val victory : fleet -> bool
+val victory : gamestate -> player option
 
 (* Prints out the grid while clearly displaying
  * the terrain and action for each tile
  * Prints out the grid displaying only the action associated with each tile
  * and not showing the terrain **)
-val display_gamestate: grid -> string
-
-(* List of ships along with their type and the number of remaining unhit
- * pieces that that ship. *)
-type fleet = (ship * int) list
-
-(* Directions that the ship can placed*)
-type dir = Up | Down | Left | Right
+val display_gamestate: gamestate -> player -> string
 
 (* Places the ship on the grid starting at the coord given and in the
  * direction on the board. Returns a new grid and the players fleet updated
  * with the ship. Raises an error if coord is out of range or
  * overlapping with a current ship. *)
-val place_ship : grid -> fleet -> ship -> coord -> dir -> (grid * fleet)
+val place_ship : gamestate -> ship -> coord -> dir -> gamestate
 
