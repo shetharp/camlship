@@ -39,8 +39,6 @@ type side = {board : grid; ships : fleet}
 
 type gamestate = side * side
 
-type event = Victory of player | Sunk of ship |
-
 (* Returns a new grid option with the action updated at that coord and that
  * new action passed back in the tuple. If coord is out of range then
  * return Empty for the action option and return the original grid. *)
