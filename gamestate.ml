@@ -1,6 +1,94 @@
-open Gamestate
-open Ai
+(* Battleship game model
+*)
 
+
+
+
+(* =============================================================================
+ * Constants (As defined in "gamestate.mli")
+============================================================================= *)
+
+(*TODO: All caps version of 'grid_size' is unacceptable for compiler.
+Fix it in the gamestate.mli. Potentially unnecessary--get rid of it entirely? *)
+let grid_size = 4
+
+
+
+
+(* =============================================================================
+ * Types (As defined in "gamestate.mli")
+============================================================================= *)
+
+type ship =
+  | Jetski
+  | Patrol
+  | Cruiser
+  | Submarine
+  | Battleship
+  | Carrier
+
+type terrain = Water | Ship of ship
+
+type tilestate = Hit | Miss | Empty
+
+type grid = (terrain * tilestate) list list
+
+type coord = char * int
+
+type fleet = (ship * coord list) list
+
+type dir = Up | Down | Left | Right
+
+type player = Player1 of string | Player2 of string
+
+type side = {board : grid; ships : fleet}
+
+type gamestate = side * side
+
+
+
+
+(* =============================================================================
+ * Game State Functions
+============================================================================= *)
+
+
+(* -----------------------------------------------------------------------------
+ * Game State Functions - Turn
+----------------------------------------------------------------------------- *)
+
+(** Returns: TODO
+ * TODO: Implementation spec/comments
+*)
+let turn gstate crd plyr : (tilestate * gamestate) =
+  failwith "TODO - turn"
+
+
+(* -----------------------------------------------------------------------------
+ * Game State Functions - Victory
+----------------------------------------------------------------------------- *)
+
+(** Returns: TODO
+ * TODO: Implementation spec/comments
+*)
+let victory gstate : (player option) =
+  failwith "TODO - victory"
+
+
+(* -----------------------------------------------------------------------------
+ * Game State Functions - Place Ship
+----------------------------------------------------------------------------- *)
+
+(** Returns: TODO
+ * TODO: Implementation spec/comments
+*)
+let place_ship gstate shp crd dr : (gamestate) =
+  failwith "TODO - place_ship"
+
+
+(* -----------------------------------------------------------------------------
+ * Game State Functions - Display Gamestate
+----------------------------------------------------------------------------- *)
 
 (** Returns a string representation of the grid given a gamestate and player.
  * Legend:
