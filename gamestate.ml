@@ -11,12 +11,18 @@ open Ai
  * TODO: In the future, extend functionality to show the player their own
  * ship placement information, while hiding their opponent's terrain info
 *)
-let display_gamestate gstate plyr =
+let display_gamestate gstate plyr (* own [of type bool] *) =
+  (* Remove if own is implemented as an argument and spec is updated*)
+  let own = true in
+
   (* Determine which player's board to display *)
   let brd = (
-    match plyr with
-    | Player1 n -> (fst gstate).board
-    | Player2 n -> (snd gstate).board
+    match plyr, own with
+    | Player1 n, true
+    | Player2 n, false ->
+                    (fst gstate).board
+    | Player1 n, false
+    | Player2 n, true -> (snd gstate).board
   ) in
   (* Helper function for displaying a row's tilestates *)
   let display_row rw =
