@@ -1,12 +1,12 @@
 (*Game state file*)
 
-open Grid
+open GameState
 
 (** Recursive user text interaction for game after game has been initialized *)
 val repl : game_state -> unit
 
 (** Prompts player to place all ships and returns the updated gamestate. *)
-val place_ships: gamestate -> gamestate
+val place_ships: side -> ship list -> side
 
 val interp_input: gamestate -> string -> gamestate
 
