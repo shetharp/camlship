@@ -1,5 +1,5 @@
 (* Size of the grid. So if GRID_SIZE is 8 then the grid is 8 by 8 tiles *)
-val GRID_SIZE : int
+val grid_size : int
 
 (* Variant of possible ship types *)
 type ship =
@@ -11,7 +11,7 @@ type ship =
   | Carrier
 
 (* Defines if there is a part of a ship on that tile or just water *)
-type terrain = Water | Ship of ship
+type terrain = Water | ShipPart of ship
 
 (* If the opponent hasn't looked at this tile it will have type None
  * If the opponent has looked at this tile and it was a ship then

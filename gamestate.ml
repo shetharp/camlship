@@ -27,7 +27,7 @@ type ship =
   | Battleship
   | Carrier
 
-type terrain = Water | Ship of ship
+type terrain = Water | ShipPart of ship
 
 type tilestate = Hit | Miss | Empty
 
@@ -51,6 +51,20 @@ type gamestate = side * side
 (* =============================================================================
  * Game State Functions
 ============================================================================= *)
+
+
+(* -----------------------------------------------------------------------------
+ * Game State Functions - Ship Length
+----------------------------------------------------------------------------- *)
+
+(** Returns the length of a ship as an integer *)
+let ship_length = function
+ | Jetski -> 1
+ | Patrol -> 2
+ | Cruiser -> 3
+ | Submarine -> 4
+ | Battleship -> 5
+ | Carrier -> 6
 
 
 (* -----------------------------------------------------------------------------
@@ -120,8 +134,8 @@ let display_gamestate gstate plyr (* own [of type bool] *) =
       match r with
       | (Water, Empty) ->   acc ^ "-"
       | (Water, Miss) ->    acc ^ "o"
-      | (Ship s, Hit) ->    acc ^ "X"
-      | (Ship s, Empty) ->  acc ^ "#"
+      | (ShipPart s, Hit) ->    acc ^ "X"
+      | (ShipPart s, Empty) ->  acc ^ "#"
       | (_, _) ->           acc ^ "?"
     ) "" rw in
   (* Return a display result in the form of a string for each row *)
