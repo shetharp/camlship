@@ -4,9 +4,11 @@ open Ai
 
 (** Returns a string representation of the grid given a gamestate and player.
  * Legend:
- * X = successful hit
- * o = miss
- * - = water
+ * - = Water, Empty
+ * o = Water, Miss
+ * X = Ship, Hit
+ * # = Ship, Empty
+ * ? = Error
  *
  * TODO: In the future, extend functionality to show the player their own
  * ship placement information, while hiding their opponent's terrain info
