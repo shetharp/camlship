@@ -1,5 +1,14 @@
 open Gamestate
 
+
+(* =============================================================================
+ * TESTING SUITE for Game State
+============================================================================= *)
+
+(*
+  Unless otherwise noted, test cases operate by default on a 4x4 grid.
+*)
+
 (*
 let is_error v : bool =
   match v with
@@ -143,3 +152,7 @@ TEST = display_gamestate (sd_empty, sd_empty) pl1 = gr_empty_str
 TEST = display_gamestate (sd_empty, sd_empty) pl2 = gr_empty_str
 TEST = display_gamestate (sd_empty, sd_mix) pl1 = gr_empty_str
 TEST = display_gamestate (sd_empty, sd_mix) pl2 = gr_mix_str
+TEST = display_gamestate (sd_miss_fst, sd_hit_lst) pl1 = gr_miss_fst_str
+TEST = display_gamestate (sd_miss_fst, sd_hit_lst) pl2 = gr_hit_lst_str
+TEST = display_gamestate (sd_miss_row, sd_hit_row) pl1 = gr_miss_row_str
+TEST = display_gamestate (sd_miss_row, sd_hit_row) pl2 = gr_hit_row_str
