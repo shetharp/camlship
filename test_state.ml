@@ -54,8 +54,11 @@ let rw_empty_str =    "----"
 let rw_miss_str =     "oooo"
 let rw_miss_fst_str = "o---"
 let rw_hit_str =      "XXXX"
-let rw_hit_lst_str =  "---X"
-let rw_mix_str =      "-oX-"
+let rw_hit_lst_str =  "###X"
+let rw_mix_str =      "-oX#"
+
+let rw_hit_lst_str_alt =  "---X"
+let rw_mix_str_alt =      "-oX-"
 
 
 (* -----------------------------------------------------------------------------
@@ -137,3 +140,6 @@ let sd_mix = {board = gr_mix; ships = [
 ============================================================================= *)
 
 TEST = display_gamestate (sd_empty, sd_empty) pl1 = gr_empty_str
+TEST = display_gamestate (sd_empty, sd_empty) pl2 = gr_empty_str
+TEST = display_gamestate (sd_empty, sd_mix) pl1 = gr_empty_str
+TEST = display_gamestate (sd_empty, sd_mix) pl2 = gr_mix_str
