@@ -37,10 +37,23 @@ let rec place_ships (side : side) (ships : ship list) : side =
  * MAIN FUNCTION
 ----------------------------------------------------------------------------- *)
 
+(* Makes an initial gamestate with two sides. Both consist of a grid
+ * composed on just water of size grid_size and an empty fleet. *)
+let initialize_gamestate (grid_size : int) : gamestate =
+  let rec init_row grid_size =
+    if grid_size = 0 then []
+    else (Water, Empty)::(init_row (grid_size - 1)) in
+  let row = init_row grid_size in
+  let rec init_grid grid_size =
+    if grid_size = 0 then []
+    else row::(init_row (grid_size - 1)) in
+  let board = init_grid grid_size in
+  in ({grid = board; ships = []}, {grid = board; ships = 0})
+
 let main () =
   (* SHOULD ASK FOR PLAYER USERNAMES *)
 
-  (init_side1, init_side2) = initialize_gamestate ()
+  (init_side1, init_side2) = initialize_gamestate grid_size
 
   ships = [Jetski; Patrol; Cruiser; Submarine; Battleship; Carrier]
 
