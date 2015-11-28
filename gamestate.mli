@@ -58,5 +58,5 @@ val display_gamestate: gamestate -> player -> string
  * direction on the board. Returns a new grid and the players fleet updated
  * with the ship. Raises an error if coord is out of range or
  * overlapping with a current ship. *)
-val place_ship : gamestate -> ship -> coord -> dir -> gamestate
+val place_ship : side -> ship -> coord -> dir -> side
 
