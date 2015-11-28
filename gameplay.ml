@@ -1,14 +1,41 @@
 open Gamestate
 open Ai
+open Str
+
+(* -----------------------------------------------------------------------------
+ * Placing Ships Phase of the Game
+----------------------------------------------------------------------------- *)
 
 let place_ship (side : side) (ship : ship)
                   (c : coord) (d : dir) : side =
   failwith "must implement"
 
+let ship_string = function
+ | Jetski -> "Jetski"
+ | Patrol -> "Patrol"
+ | Cruiser -> "Cruiser"
+ | Submarine -> "Submarine"
+ | Battleship -> "Battleship"
+ | Carrier -> "Carrier"
+
 let rec place_ships (side : side) (ships : ship list) : side =
   match ships with
   | [] -> gs
-  | ship::t -> failwith "Ask user for input and place ship"
+  | ship::t ->
+      print_newline ();
+      print_endline "Placing your %s." (ship_string ship);
+      print_string "Enter a coordinate for the head of your ship:  ";
+      let c = String.trim (read_line ()) in
+      print_string "Enter a direction for the tail of your ship to point:  ";
+      let d = String.trim (read_line ()) in
+      if invalid_placement c d then place_ships side ships
+      else
+        let new_side = place_ship side c d in
+        place_ships new_side t
+
+(* -----------------------------------------------------------------------------
+ * MAIN FUNCTION
+----------------------------------------------------------------------------- *)
 
 let main () =
   (* SHOULD ASK FOR PLAYER USERNAMES *)
