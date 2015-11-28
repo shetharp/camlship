@@ -3,7 +3,7 @@ open Ai
 open Str
 
 (* -----------------------------------------------------------------------------
- * Placing Ships Phase of the Game
+ * PLACING SHIPS PHASE
 ----------------------------------------------------------------------------- *)
 
 let place_ship (side : side) (ship : ship)
@@ -18,20 +18,44 @@ let ship_string = function
  | Battleship -> "Battleship"
  | Carrier -> "Carrier"
 
+let translate_coord (s : string) : coord option =
+  failwith "must implement"
+
+let translate_dir (s : string) : dir option =
+  failwith "must implement"
+
 let rec place_ships (side : side) (ships : ship list) : side =
   match ships with
-  | [] -> gs
+  | [] -> side
   | ship::t ->
       print_newline ();
-      print_endline "Placing your %s." (ship_string ship);
+      Printf.printf "Placing your %s.\n" (ship_string ship);
       print_string "Enter a coordinate for the head of your ship:  ";
-      let c = String.trim (read_line ()) in
+      let c = translate_coord (String.trim (read_line ())) in
       print_string "Enter a direction for the tail of your ship to point:  ";
-      let d = String.trim (read_line ()) in
-      if invalid_placement c d then place_ships side ships
-      else
-        let new_side = place_ship side c d in
-        place_ships new_side t
+      let d = translate_dir (String.trim (read_line ())) in
+      begin match c,d with
+      | None,_ ->
+          print_endline "These are invalid coordinates. Try Again";
+          place_ships side ships
+      | _,None ->
+          print_endline "This is an invalid direction. Try Again";
+          place_ships side ships
+      | Some(c),Some(d) ->
+          let new_side = place_ship side ship c d in
+          place_ships new_side t
+      end
+
+
+(* -----------------------------------------------------------------------------
+ * ATTACK PHASE
+----------------------------------------------------------------------------- *)
+
+let interp_input (gs : gamestate) (instr : string) : gamestate =
+  failwith "TODO"
+
+let repl (gs : gamestate) : unit =
+  failwith "TODO"
 
 (* -----------------------------------------------------------------------------
  * MAIN FUNCTION
@@ -46,24 +70,25 @@ let initialize_gamestate (grid_size : int) : gamestate =
   let row = init_row grid_size in
   let rec init_grid grid_size =
     if grid_size = 0 then []
-    else row::(init_row (grid_size - 1)) in
-  let board = init_grid grid_size in
-  in ({grid = board; ships = []}, {grid = board; ships = 0})
+    else row::(init_grid (grid_size - 1)) in
+  let b = init_grid grid_size in
+  ({board = b; ships = []}, {board = b; ships = []})
 
 let main () =
   (* SHOULD ASK FOR PLAYER USERNAMES *)
 
-  (init_side1, init_side2) = initialize_gamestate grid_size
+  let (init_side1, init_side2) = initialize_gamestate grid_size in
 
-  ships = [Jetski; Patrol; Cruiser; Submarine; Battleship; Carrier]
+  let ships = [Jetski; Patrol; Cruiser; Submarine; Battleship; Carrier] in
 
   (* Placing ships phase *)
   (* side1 places ships *)
-  side1 = place_ships init_side1 ships
+  let side1 = place_ships init_side1 ships in
   (* side2 places ships *)
-  side2 = place_ships init_side2 ships
+  let side2 = place_ships init_side2 ships in
 
-  gamestate = (side1, side2)
+  let gamestate = (side1, side2) in
+  ignore(gamestate)
 
   (* CALL REPL TO BEGIN ATTACK PHASE *)
 

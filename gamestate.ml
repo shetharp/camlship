@@ -96,8 +96,11 @@ let victory gstate : (player option) =
 (** Returns: TODO
  * TODO: Implementation spec/comments
 *)
-let place_ship gstate shp crd dr : (gamestate) =
-  failwith "TODO - place_ship"
+let place_ship (side : side) (ship : ship)
+                  (c : coord) (d : dir) : side =
+  failwith "must implement"
+(*let place_ship gstate shp crd dr : (gamestate) =
+  failwith "TODO - place_ship"*)
 
 
 (* -----------------------------------------------------------------------------
@@ -149,7 +152,7 @@ let victory (gs : gamestate) : player option =
       match r with
       | (ShipPart s, Empty) -> acc + 1
       | (_,_) -> acc
-    ) 0 r
+    ) 0 rw
   in
   let vic_on_board (b : grid) : bool =
     let result = List.fold_left (fun acc r ->
@@ -157,6 +160,6 @@ let victory (gs : gamestate) : player option =
     ) 0 b in
     result = 0
   in
-  if vic_on_board (fst gs).board then Some Player2
-  else if vic_on_board (snd gs).board then Some Player1
+  if vic_on_board (fst gs).board then Some (Player2("player2"))
+  else if vic_on_board (snd gs).board then Some (Player1("player1"))
   else None
