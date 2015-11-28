@@ -142,3 +142,21 @@ let display_gamestate gstate plyr (* own [of type bool] *) =
   List.fold_left (fun result row ->
     result ^ display_row row ^ "\n"
   ) "" brd
+
+let victory (gs : gamestate) : player option =
+  let unhit_in_row rw : int =
+    List.fold_left (fun acc r ->
+      match r with
+      | (ShipPart s, Empty) -> acc + 1
+      | (_,_) -> acc
+    ) 0 r
+  in
+  let vic_on_board (b : grid) : bool =
+    let result = List.fold_left (fun acc r ->
+      acc + (unhit_in_row r)
+    ) 0 b in
+    result = 0
+  in
+  if vic_on_board (fst gs).board then Some Player2
+  else if vic_on_board (snd gs).board then Some Player1
+  else None
