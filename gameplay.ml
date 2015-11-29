@@ -5,11 +5,6 @@ open Str
 (* -----------------------------------------------------------------------------
  * PLACING SHIPS PHASE
 ----------------------------------------------------------------------------- *)
-
-let place_ship (side : side) (ship : ship)
-                  (c : coord) (d : dir) : side =
-  failwith "must implement"
-
 let ship_string = function
  | Jetski -> "Jetski"
  | Patrol -> "Patrol"
@@ -18,23 +13,51 @@ let ship_string = function
  | Battleship -> "Battleship"
  | Carrier -> "Carrier"
 
-let translate_coord (s : string) : coord option =
-  failwith "must implement"
+let dir_of_string (s : string) : dir option =
+  if s = "DOWN" then Some(Down)
+  else if s = "UP" then Some(Up)
+  else if s = "LEFT" then Some(Left)
+  else if s = "RIGHT" then Some(Right)
+  else None
 
-let translate_dir (s : string) : dir option =
-  failwith "must implement"
+let translate (instr : string) : coord option * dir option =
+  let words = List.map (String.trim)
+                (Str.bounded_split (Str.regexp " ") instr 2) in
+  match words with
+  | [] -> (None, None)
+  | h::[] -> (None, None)
+  | c::d::t ->
+      let c_option =
+        if String.length c < 2 then None
+        else
+          let letter = String.get (String.uppercase c) 0 in
+          if (Char.code letter) < 65 || (Char.code letter) > 90
+          then None
+          else
+            let num_string = String.sub c 1 ((String.length c) - 1) in
+            let num =
+              try int_of_string num_string with
+              | exn -> -1 in
+            if num = -1 then None
+            else Some(letter, num) in
+      let d_option = dir_of_string (String.uppercase d) in
+      (c_option, d_option)
+
+let out_of_bounds (c : coord) (d : dir) : bool =
+  failwith "TODO"
 
 let rec place_ships (side : side) (ships : ship list) : side =
   match ships with
   | [] -> side
   | ship::t ->
       print_newline ();
-      Printf.printf "Placing your %s.\n" (ship_string ship);
-      print_string "Enter a coordinate for the head of your ship:  ";
-      let c = translate_coord (String.trim (read_line ())) in
-      print_string "Enter a direction for the tail of your ship to point:  ";
-      let d = translate_dir (String.trim (read_line ())) in
+      Printf.printf "Placing your %s. Enter a coordinate for the head of your ship\n
+        and a direction for the tail of your ship to point:  " (ship_string ship);
+      let (c,d) = translate (String.trim (read_line ())) in
       begin match c,d with
+      | None,None ->
+          print_endline "These are invalid instructions. Try Again";
+          place_ships side ships
       | None,_ ->
           print_endline "These are invalid coordinates. Try Again";
           place_ships side ships
@@ -42,8 +65,12 @@ let rec place_ships (side : side) (ships : ship list) : side =
           print_endline "This is an invalid direction. Try Again";
           place_ships side ships
       | Some(c),Some(d) ->
-          let new_side = place_ship side ship c d in
-          place_ships new_side t
+          if out_of_bounds c d then
+            (print_endline "These coordinates are out of bounds. Try Again";
+            place_ships side ships)
+          else
+            let new_side = place_ship side ship c d in
+            place_ships new_side t
       end
 
 

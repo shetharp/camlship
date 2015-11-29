@@ -96,11 +96,11 @@ let victory gstate : (player option) =
 (** Returns: TODO
  * TODO: Implementation spec/comments
 *)
+(*let place_ship gstate shp crd dr : (gamestate) =
+  failwith "TODO - place_ship"*)
 let place_ship (side : side) (ship : ship)
                   (c : coord) (d : dir) : side =
   failwith "must implement"
-(*let place_ship gstate shp crd dr : (gamestate) =
-  failwith "TODO - place_ship"*)
 
 
 (* -----------------------------------------------------------------------------
