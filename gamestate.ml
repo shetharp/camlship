@@ -41,6 +41,8 @@ type dir = Up | Down | Left | Right
 
 type player = Player1 of string | Player2 of string
 
+type playerstate = {first : player; second : player; current : int}
+
 type side = {board : grid; ships : fleet}
 
 type gamestate = side * side
@@ -209,6 +211,6 @@ let victory (gs : gamestate) : player option =
     ) 0 b in
     result = 0
   in
-  if vic_on_board (fst gs).board then Some (Player2("player2"))
-  else if vic_on_board (snd gs).board then Some (Player1("player1"))
+  if vic_on_board (fst gs).board then Some (Player2)
+  else if vic_on_board (snd gs).board then Some (Player1)
   else None

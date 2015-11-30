@@ -8,7 +8,7 @@ val repl : gamestate -> unit
 (** Prompts player to place all ships and returns the updated gamestate. *)
 val place_ships: side -> ship list -> side
 
-val interp_input: gamestate -> string -> gamestate
+val interp_input: gamestate -> player -> string -> gamestate * bool
 
 (** Main function for playing game. Allows players to initialize grids with ships
   * and starts game with user text interaction *)

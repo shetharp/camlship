@@ -78,12 +78,65 @@ let rec place_ships (side : side) (ships : ship list) : side =
  * ATTACK PHASE
 ----------------------------------------------------------------------------- *)
 
-let interp_input (gs : gamestate) (instr : string) : gamestate =
-  failwith "TODO"
+let display_boards (gs : gamestate) (p : player) : gamestate =
+  let s = display_gamestate gs p in
+  print_endline s; gs
 
-let repl (gs : gamestate) : unit =
-  failwith "TODO"
+let try_move (gs : gamestate) (s: string) (p : player) : gamestate * bool=
+  let c = String.get s 0 in
+  let is = String.get s 1 in
+  try
+    let i = int_of_string is in
+    let (t, gnew) = turn gs (c,i) p in
+    match t with
+    | Empty -> print_endline "[!] Invalid move. Try again"; (gs, false)
+    | Hit   -> print_endline "You hit a ship! Your turn again!"; (gnew, false)
+    | Miss  -> print_endline "You missed."; (gnew, true)
+  with _ -> print_endline "[!] Invalid move. Try again."; (gs, false)
 
+
+(*returns updated gamestate and bool true if next player's turn*)
+let interp_input (gs : gamestate) (p : player) (instr : string)
+  : (gamestate * bool)=
+  let open Str in
+  let inp = Str.split (Str.regexp " ") instr in
+  match inp with
+  | [] -> gs (*should error be thrown if no instruction?*)
+  | hd :: [] -> (
+    match hd with
+    | "show"  -> ((display_boards gs p), false)
+    | "board" -> ((display_boards gs p), false)
+    | _       -> (try_move gs hd p)
+  )
+
+let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
+  let v = victory gs in
+  match v with
+  | Some Player1 -> print_endline "[!!] Congratulations! "^ps.first^" has won!"
+  | Some Player2 -> print_endline "[!!] Congratulations! "^ps.second^" has won!"
+  | None   -> begin
+    if (not continue)
+    then print_endline "The game has ended. Thanks for playing!"
+    else begin
+      match ps.current with
+      | Player1 -> (print_endline ps.first^"'s turn. Make your move.";
+        print_string (display_gamestate gs Player1);
+        let read = read_line () in
+        let trimmed = String.trim read in
+        let input = String.lowercase trimmed in
+        if input = "quit" then repl gs ps false
+        let (newgs, switchPlayer) = interp_input gs p input in
+        let newcurp = (if switchPlayer
+        then if ps.current = Player1 then Player2 else Player1
+        else ps.current) in
+        let newps = {first = ps.first; second = ps.second; current = newcurp} in
+        repl newgs newps true
+      )
+      | Player2 -> (print_endline ps.first^"'s turn. Make your move."
+        repl gs ps true
+      )
+      end
+  end
 (* -----------------------------------------------------------------------------
  * MAIN FUNCTION
 ----------------------------------------------------------------------------- *)
@@ -118,6 +171,7 @@ let main () =
   ignore(gamestate)
 
   (* CALL REPL TO BEGIN ATTACK PHASE *)
+  (* call with tuple of players, true to start w player 1*)
 
 let _ = main()
 

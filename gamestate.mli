@@ -33,7 +33,9 @@ type fleet = (ship * coord list) list
 (* Directions that the ship can placed*)
 type dir = Up | Down | Left | Right
 
-type player = Player1 of string | Player2 of string
+type player = Player1| Player2
+
+type playerstate = {first : string; second : string; current : player}
 
 type side = {board : grid; ships : fleet}
 
