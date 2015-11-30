@@ -39,9 +39,9 @@ type fleet = (ship * coord list) list
 
 type dir = Up | Down | Left | Right
 
-type player = Player1 of string | Player2 of string
+type player = Player1 | Player2
 
-type playerstate = {first : player; second : player; current : int}
+type playerstate = {first : string; second : string; current : player}
 
 type side = {board : grid; ships : fleet}
 
@@ -126,8 +126,8 @@ let turn gstate crd plyr : (tilestate * gamestate) =
       _ -> (Empty, s)
   in
   match plyr, gstate with
-  | Player1 x, (s1,s2) -> let (a,b) = makeMove s2 crd in (a, (s1,b))
-  | Player2 x, (s1,s2) -> let (a,b) = makeMove s1 crd in (a, (b,s2))
+  | Player1, (s1,s2) -> let (a,b) = makeMove s2 crd in (a, (s1,b))
+  | Player2, (s1,s2) -> let (a,b) = makeMove s1 crd in (a, (b,s2))
 
 (* -----------------------------------------------------------------------------
  * Game State Functions - Victory
@@ -176,11 +176,11 @@ let display_gamestate gstate plyr (* own [of type bool] *) =
   (* Determine which player's board to display *)
   let brd = (
     match plyr, own with
-    | Player1 n, true
-    | Player2 n, false ->
+    | Player1, true
+    | Player2, false ->
                     (fst gstate).board
-    | Player1 n, false
-    | Player2 n, true -> (snd gstate).board
+    | Player1, false
+    | Player2, true -> (snd gstate).board
   ) in
   (* Helper function for displaying a row's tilestates *)
   let display_row rw =

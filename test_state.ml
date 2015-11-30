@@ -175,6 +175,6 @@ TEST = victory (sd_hit_row_new, sd_mix_new) = None
 
 TEST = victory (sd_hit_row_new, sd_hit_row_new) = None
 
-TEST = victory (sd_hit_row_new, sd_hit_row) = Some (Player1 "player1")
+TEST = victory (sd_hit_row_new, sd_hit_row) = Some (Player1)
 
-TEST = victory (sd_hit_row, sd_hit_row_new) = Some (Player2 "player2")
+TEST = victory (sd_hit_row, sd_hit_row_new) = Some (Player2)
