@@ -45,7 +45,8 @@ type gamestate = side * side
 val turn : gamestate -> coord -> player -> tilestate * gamestate
 
 (* Returns true if there are no ships remaining on the board that have
- * not been destroyed. Thus the game will end *)
+ * not been destroyed.
+ * Precondition: Each side in the gamestate contains a grid that is not empty*)
 val victory : gamestate -> player option
 
 (* Prints out the grid while clearly displaying
