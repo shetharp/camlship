@@ -77,9 +77,10 @@ let rw_mix_str_alt =      "-oX-"
 let gr_empty = [rw_empty; rw_empty; rw_empty; rw_empty]
 let gr_miss_fst = [rw_miss_fst; rw_empty; rw_empty; rw_empty]
 let gr_hit_lst = [rw_empty; rw_empty; rw_empty; rw_hit_lst]
-let gr_miss_row = [rw_empty; rw_miss; rw_empty; rw_empty]
+let gr_miss_row = [rw_empty; rw_miss; rw_empty; rw_hit]
 let gr_hit_row = [rw_empty; rw_empty; rw_hit; rw_empty]
 let gr_mix = [rw_miss_fst; rw_empty; rw_mix; rw_hit_lst]
+let gr_miss_hit_empty = [rw_miss_fst; rw_hit_lst; rw_empty; rw_mix]
 
 let gr_empty_str =
   rw_empty_str ^ "\n" ^
@@ -140,9 +141,19 @@ let sd_mix = {board = gr_mix; ships = [
     (Jetski, [('C', 4)]);
     (Jetski, [('D', 4)])
   ]}
-
-
-
+let sd_hit_row_new = {board = gr_miss_hit_empty; ships = [
+    (Cruiser, [('C', 1)]);
+    (Cruiser, [('C', 2)]);
+    (Cruiser, [('C', 3)]);
+    (Jetski, [('C', 4)]);
+  ]}
+let sd_mix_new = {board = gr_mix; ships = [
+    (Cruiser, [('C', 1)]);
+    (Cruiser, [('C', 2)]);
+    (Cruiser, [('C', 3)]);
+    (Jetski, [('C', 4)]);
+    (Jetski, [('D', 4)])
+  ]}
 
 (* =============================================================================
  * TEST - Display Gamestate
@@ -154,5 +165,16 @@ TEST = display_gamestate (sd_empty, sd_mix) pl1 = gr_empty_str
 TEST = display_gamestate (sd_empty, sd_mix) pl2 = gr_mix_str
 TEST = display_gamestate (sd_miss_fst, sd_hit_lst) pl1 = gr_miss_fst_str
 TEST = display_gamestate (sd_miss_fst, sd_hit_lst) pl2 = gr_hit_lst_str
-TEST = display_gamestate (sd_miss_row, sd_hit_row) pl1 = gr_miss_row_str
 TEST = display_gamestate (sd_miss_row, sd_hit_row) pl2 = gr_hit_row_str
+
+(* =============================================================================
+ * TEST - Victory Check
+============================================================================= *)
+
+TEST = victory (sd_hit_row_new, sd_mix_new) = None
+
+TEST = victory (sd_hit_row_new, sd_hit_row_new) = None
+
+TEST = victory (sd_hit_row_new, sd_hit_row) = Some (Player1 "player1")
+
+TEST = victory (sd_hit_row, sd_hit_row_new) = Some (Player2 "player2")
