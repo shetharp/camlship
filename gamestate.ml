@@ -77,17 +77,16 @@ let ship_length = function
 
 let get_row c = (Char.code (Char.uppercase c)) - (Char.code 'A')
 
-(* Precondition: crd is a valid coordinate *)
-let replace_element g ts crd : grid =
+(* Returns an updated grid of g with the indicated coordinate replaced with ts.
+   Precondition: crd is a valid coordinate *)
+let replace_element (g:grid) (tile:terrain*tilestate) (crd:coord) : grid =
   let rowNum = get_row (fst crd) in
   let colNum = snd crd in
   let rec replace_in_row row acc: (terrain * tilestate) list =
     match row with
     | [] -> []
     | h::t -> if acc = colNum
-              then
-                let (a,_) = h in
-                (a,ts) :: (replace_in_row t (acc+1))
+              then tile :: (replace_in_row t (acc+1))
               else h :: (replace_in_row t (acc+1))
   in
   let rec replace g acc : grid =
@@ -99,10 +98,12 @@ let replace_element g ts crd : grid =
   in
   replace g 0
 
+  (*Interp will take care of checking out of bounds. - can remove that from below*)
+
 (*Currently can handle lowercase or uppercase coords*)
 (** Returns: a pair of the tilestate and new gamestate after a move has been
  *    made. If the coordinate is not a valid tile or it has already been picked,
- *    then tilestate is Empty and the gamestate is returned unchanged.
+ *    then tilestate is None and the gamestate is returned unchanged.
  *  Precondition: Player is the player that is making the move.
  *)
 let turn gstate crd plyr : (tilestate option * gamestate) =
@@ -112,16 +113,16 @@ let turn gstate crd plyr : (tilestate option * gamestate) =
       let row = List.nth g (get_row (fst c)) in
       let tile = List.nth row (snd c) in
       begin match tile with
-      | (Water, Empty) -> let newg = replace_element g Miss crd in
+      | (Water, Empty) -> let newg = replace_element g (Water,Miss) crd in
                           let news = {board = newg; ships = s.ships} in
-                          (Miss, news)
-      | (ShipPart _, Empty) -> let newg = replace_element g Miss crd in
+                          (Some Miss, news)
+      | (ShipPart x, Empty) -> let newg = replace_element g (ShipPart x,Hit) crd in
                                let news = {board = newg; ships = s.ships} in
-                               (Hit, news)
+                               (Some Hit, news)
       | _ -> raise (Failure "Already hit")
       end
     with
-      _ -> (Empty, s)
+      _ -> (None, s)
   in
   match plyr, gstate with
   | Player1, (s1,s2) -> let (a,b) = makeMove s2 crd in (a, (s1,b))

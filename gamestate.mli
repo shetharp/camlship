@@ -30,6 +30,9 @@ type coord = char * int
  * pieces that that ship. *)
 type fleet = ship list
 
+(* Directions that the ship can placed*)
+type dir = Up | Down | Left | Right
+
 type player = Player1 | Player2
 
 type playerstate = {first : string; second : string; current : player}
@@ -40,9 +43,10 @@ type gamestate = side * side
 
 val ship_length : ship -> int
 
-(* Returns a new grid option with the action updated at that coord and that
- * new action passed back in the tuple. If coord is out of range then
- * return Empty for the action option and return the original grid. *)
+(* Returns a new grid with the tilestate updated at that coord and that
+ * new tilestate passed back in the tuple as an option. If coord is out of range
+ * or already played, then return None for the tilestate option and return the
+ * original grid. *)
 val turn : gamestate -> coord -> player -> (tilestate option * gamestate)
 
 (* Returns true if there are no ships remaining on the board that have
