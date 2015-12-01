@@ -20,6 +20,7 @@ let dir_of_string (s : string) : dir option =
   else if s = "RIGHT" then Some(Right)
   else None
 
+(* Returns an uppercase character and a number as a coord option and a direction option *)
 let translate (instr : string) : coord option * dir option =
   let words = List.map (String.trim)
                 (Str.bounded_split (Str.regexp " ") instr 2) in
@@ -44,8 +45,16 @@ let translate (instr : string) : coord option * dir option =
       (c_option, d_option)
 
 let out_of_bounds ((letter,number) : coord) (d : dir) : bool =
-  if number > grid_size || number < 1 then false
-  else if ((Char.code letter) - 64) > grid_size then false
+  let hrow = (Char.code letter) - 65 in
+  let hcol = number in
+  let trow =
+    match dir with
+    | Up ->
+    | Down ->
+    | _ ->
+
+  if number > grid_size || number < 0 then false
+  else if ((Char.code letter) - 65) > grid_size then false
   else true
 
 let rec place_ships (side : side) (ships : ship list) : side =
@@ -67,12 +76,12 @@ let rec place_ships (side : side) (ships : ship list) : side =
           print_endline "This is an invalid direction. Try Again";
           place_ships side ships
       | Some(c),Some(d) ->
-          if out_of_bounds c d then
-            (print_endline "These coordinates are out of bounds. Try Again";
-            place_ships side ships)
-          else
-            let new_side = place_ship side ship c d in
-            place_ships new_side t
+          begin match place_ship side ship c d with
+          | None ->
+              (print_endline "These coordinates are out of bounds. Try Again";
+              place_ships side ships)
+          | Some(new_side) -> place_ships new_side t
+          end
       end
 
 

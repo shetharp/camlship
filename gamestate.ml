@@ -142,12 +142,59 @@ let turn gstate crd plyr : (tilestate option * gamestate) =
  * Game State Functions - Place Ship
 ----------------------------------------------------------------------------- *)
 
-(** Returns: TODO
+let out_of_bounds ((letter,number) : coord) (d : dir) (s : ship) : bool =
+  let hrow = (Char.code letter) - 65 in
+  let hcol = number in
+  let trow =
+    match dir with
+    | Up -> hrow - (ship_length s) + 1
+    | Down -> hrow + (ship_length s) - 1
+    | _ -> hrow
+  let tcol =
+    match dir with
+    | Left -> hcol - (ship_length s) + 1
+    | Right -> hcol + (ship_length s) - 1
+    | _ -> hcol
+  if (hrow > grid_size || hrow < 0) ||
+     (hcol > grid_size || hcol < 0) ||
+     (trow > grid_size || trow < 0) ||
+     (tcol > grid_size || tcol < 0)
+     then false
+  else true
+
+let overlap (g : grid) (c : coord) : bool =
+
+let rec replace_tiles (g : grid) (ship : ship) (c : coord)
+                        (d : dir) (i : int) : grid option =
+  if i = 0 then Some(g)
+  else
+    let row = (Char.code (fst coord)) - 65 in
+    let col = snd coord in
+    let (new_row, new_col) =
+      begin match d with
+      | Down -> (row + 1, col)
+      | Up -> (row - 1, col)
+      | Left -> (row, col - 1)
+      | Right -> (row, col + 1) in
+    let new_coord = (Char.chr (new_row + 65), new_col) in
+    if overlap g c then None
+    else
+      let new_grid = replace_element g (ShipPart(ship), Empty) c
+      replace_tiles new_grid new_coord d (i-1)
+
+(** Returns: Returns a side option with either the updated side
+      or None if the coordinates were out of bounds or overlapping
+      with another ship.
+    Pre: Takes in a coordinate and direction.
  * TODO: Implementation spec/comments
 *)
 let place_ship (side : side) (ship : ship)
-                  (c : coord) : side =
-  failwith "must implement"
+                  (c : coord) (d : dir) : side option =
+  if out_of_bounds c d then None
+  else
+    let g = side.board in
+    replace_tiles side g ship c d (ship_length ship)
+
 
 
 (* -----------------------------------------------------------------------------
