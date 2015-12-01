@@ -23,8 +23,8 @@ let is_error v : bool =
  * Reusable Variables
 ============================================================================= *)
 
-let pl1 = Player1("John")
-let pl2 = Player2("Jane")
+let pl1 = Player1
+let pl2 = Player2
 
 
 
@@ -76,6 +76,7 @@ let rw_mix_str_alt =      "-oX-"
 
 let gr_empty = [rw_empty; rw_empty; rw_empty; rw_empty]
 let gr_miss_fst = [rw_miss_fst; rw_empty; rw_empty; rw_empty]
+let gr_miss_fst_row = [rw_miss; rw_empty; rw_empty; rw_empty]
 let gr_hit_lst = [rw_empty; rw_empty; rw_empty; rw_hit_lst]
 let gr_miss_row = [rw_empty; rw_miss; rw_empty; rw_hit]
 let gr_hit_row = [rw_empty; rw_empty; rw_hit; rw_empty]
@@ -90,6 +91,13 @@ let gr_empty_str =
 
 let gr_miss_fst_str =
   rw_miss_fst_str ^ "\n" ^
+  rw_empty_str ^ "\n" ^
+  rw_empty_str ^ "\n" ^
+  rw_empty_str ^ "\n"
+
+
+let gr_miss_fst_row_str =
+  rw_miss_str ^ "\n" ^
   rw_empty_str ^ "\n" ^
   rw_empty_str ^ "\n" ^
   rw_empty_str ^ "\n"
@@ -178,3 +186,29 @@ TEST = victory (sd_hit_row_new, sd_hit_row_new) = None
 TEST = victory (sd_hit_row_new, sd_hit_row) = Some (Player1)
 
 TEST = victory (sd_hit_row, sd_hit_row_new) = Some (Player2)
+
+(* =============================================================================
+ * TEST - Turn
+============================================================================= *)
+
+let c = (sd_empty, sd_empty)
+let (b,c) = turn c ('a',0) Player1
+
+TEST = b = Some Miss
+TEST = display_gamestate c pl2 = gr_miss_fst_str
+TEST = display_gamestate c pl1 = gr_empty_str
+
+let (b,c) = turn c ('a', 0) Player1
+
+TEST = b = None
+TEST = display_gamestate c pl2 = gr_miss_fst_str
+TEST = display_gamestate c pl1 = gr_empty_str
+
+let (b,c) = turn c ('a',1) Player1
+let (b,c) = turn c ('a',2) Player1
+let (b,c) = turn c ('a',3) Player1
+
+
+TEST = b = Some Miss
+TEST = display_gamestate c pl2 = gr_miss_fst_row_str
+TEST = display_gamestate c pl1 = gr_empty_str
