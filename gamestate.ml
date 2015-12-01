@@ -35,9 +35,7 @@ type grid = (terrain * tilestate) list list
 
 type coord = char * int
 
-type fleet = (ship * coord list) list
-
-type dir = Up | Down | Left | Right
+type fleet = ship list
 
 type player = Player1 | Player2
 
@@ -148,10 +146,8 @@ let turn gstate crd plyr : (tilestate option * gamestate) =
 (** Returns: TODO
  * TODO: Implementation spec/comments
 *)
-(*let place_ship gstate shp crd dr : (gamestate) =
-  failwith "TODO - place_ship"*)
 let place_ship (side : side) (ship : ship)
-                  (c : coord) (d : dir) : side =
+                  (c : coord) : side =
   failwith "must implement"
 
 

@@ -38,13 +38,15 @@ let translate (instr : string) : coord option * dir option =
             let num =
               try int_of_string num_string with
               | exn -> -1 in
-            if num = -1 then None
+            if num < 0 then None
             else Some(letter, num) in
       let d_option = dir_of_string (String.uppercase d) in
       (c_option, d_option)
 
-let out_of_bounds (c : coord) (d : dir) : bool =
-  failwith "TODO"
+let out_of_bounds ((letter,number) : coord) (d : dir) : bool =
+  if number > grid_size || number < 1 then false
+  else if ((Char.code letter) - 64) > grid_size then false
+  else true
 
 let rec place_ships (side : side) (ships : ship list) : side =
   match ships with
@@ -86,7 +88,7 @@ let try_move (gs : gamestate) (s: string) (p : player) : gamestate * bool=
   let c = String.get s 0 in
   let is = String.get s 1 in
   try
-    let i = int_of_string is in
+    let i = int_of_char is in
     let (t, gnew) = turn gs (c,i) p in
     match t with
     | Empty -> print_endline "[!] Invalid move. Try again"; (gs, false)
@@ -101,7 +103,7 @@ let interp_input (gs : gamestate) (p : player) (instr : string)
   let open Str in
   let inp = Str.split (Str.regexp " ") instr in
   match inp with
-  | [] -> gs (*should error be thrown if no instruction?*)
+  | [] -> (gs, false) (*should error be thrown if no instruction?*)
   | hd :: [] -> (
     match hd with
     | "show"  -> ((display_boards gs p), false)
@@ -112,20 +114,20 @@ let interp_input (gs : gamestate) (p : player) (instr : string)
 let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
   let v = victory gs in
   match v with
-  | Some Player1 -> print_endline "[!!] Congratulations! "^ps.first^" has won!"
-  | Some Player2 -> print_endline "[!!] Congratulations! "^ps.second^" has won!"
+  | Some Player1 -> print_endline ("[!!] Congratulations! "^ps.first^" has won!")
+  | Some Player2 -> print_endline ("[!!] Congratulations! "^ps.second^" has won!")
   | None   -> begin
     if (not continue)
     then print_endline "The game has ended. Thanks for playing!"
     else begin
       match ps.current with
-      | Player1 -> (print_endline ps.first^"'s turn. Make your move.";
+      | Player1 -> (print_endline (ps.first^"'s turn. Make your move.");
         print_string (display_gamestate gs Player1);
         let read = read_line () in
         let trimmed = String.trim read in
         let input = String.lowercase trimmed in
         if input = "quit" then repl gs ps false
-        let (newgs, switchPlayer) = interp_input gs p input in
+        else let (newgs, switchPlayer) = interp_input gs ps input in
         let newcurp = (if switchPlayer
         then if ps.current = Player1 then Player2 else Player1
         else ps.current) in
@@ -143,7 +145,7 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
 
 (* Makes an initial gamestate with two sides. Both consist of a grid
  * composed on just water of size grid_size and an empty fleet. *)
-let initialize_gamestate (grid_size : int) : gamestate =
+let initialize_gamestate () : gamestate =
   let rec init_row grid_size =
     if grid_size = 0 then []
     else (Water, Empty)::(init_row (grid_size - 1)) in
@@ -154,12 +156,21 @@ let initialize_gamestate (grid_size : int) : gamestate =
   let b = init_grid grid_size in
   ({board = b; ships = []}, {board = b; ships = []})
 
+let generate_fleet () : fleet =
+    if grid_size >= 10 then [Carrier; Battleship; Submarine; Cruiser; Patrol; Jetski]
+    else if grid_size >= 9 then [Battleship; Submarine; Cruiser; Patrol; Jetski]
+    else if grid_size >= 8 then [Submarine; Cruiser; Patrol; Jetski]
+    else if grid_size >= 6 then [Cruiser; Patrol; Jetski]
+    else if grid_size >= 4 then [Patrol; Jetski]
+    else if grid_size >= 2 then [Jetski]
+    else []
+
 let main () =
   (* SHOULD ASK FOR PLAYER USERNAMES *)
 
-  let (init_side1, init_side2) = initialize_gamestate grid_size in
+  let (init_side1, init_side2) = initialize_gamestate () in
 
-  let ships = [Jetski; Patrol; Cruiser; Submarine; Battleship; Carrier] in
+  let ships = generate_fleet () in
 
   (* Placing ships phase *)
   (* side1 places ships *)
