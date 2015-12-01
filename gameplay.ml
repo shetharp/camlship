@@ -38,13 +38,15 @@ let translate (instr : string) : coord option * dir option =
             let num =
               try int_of_string num_string with
               | exn -> -1 in
-            if num = -1 then None
+            if num < 0 then None
             else Some(letter, num) in
       let d_option = dir_of_string (String.uppercase d) in
       (c_option, d_option)
 
-let out_of_bounds (c : coord) (d : dir) : bool =
-  failwith "TODO"
+let out_of_bounds ((letter,number) : coord) (d : dir) : bool =
+  if number > grid_size || number < 1 then false
+  else if ((Char.code letter) - 64) > grid_size then false
+  else true
 
 let rec place_ships (side : side) (ships : ship list) : side =
   match ships with
@@ -90,7 +92,7 @@ let repl (gs : gamestate) : unit =
 
 (* Makes an initial gamestate with two sides. Both consist of a grid
  * composed on just water of size grid_size and an empty fleet. *)
-let initialize_gamestate (grid_size : int) : gamestate =
+let initialize_gamestate () : gamestate =
   let rec init_row grid_size =
     if grid_size = 0 then []
     else (Water, Empty)::(init_row (grid_size - 1)) in
@@ -104,7 +106,7 @@ let initialize_gamestate (grid_size : int) : gamestate =
 let main () =
   (* SHOULD ASK FOR PLAYER USERNAMES *)
 
-  let (init_side1, init_side2) = initialize_gamestate grid_size in
+  let (init_side1, init_side2) = initialize_gamestate () in
 
   let ships = [Jetski; Patrol; Cruiser; Submarine; Battleship; Carrier] in
 
