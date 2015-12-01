@@ -106,7 +106,7 @@ let replace_element (g:grid) (tile:terrain*tilestate) (crd:coord) : grid =
  *    then tilestate is None and the gamestate is returned unchanged.
  *  Precondition: Player is the player that is making the move.
  *)
-let turn gstate crd plyr : (tilestate option * gamestate) =
+let turn gstate crd plyr : (tilestate * gamestate) =
   let makeMove s c =
     let g = s.board in
     try
@@ -115,14 +115,14 @@ let turn gstate crd plyr : (tilestate option * gamestate) =
       begin match tile with
       | (Water, Empty) -> let newg = replace_element g (Water,Miss) crd in
                           let news = {board = newg; ships = s.ships} in
-                          (Some Miss, news)
+                          (Miss, news)
       | (ShipPart x, Empty) -> let newg = replace_element g (ShipPart x,Hit) crd in
                                let news = {board = newg; ships = s.ships} in
-                               (Some Hit, news)
+                               (Hit, news)
       | _ -> raise (Failure "Already hit")
       end
     with
-      _ -> (None, s)
+      _ -> (Empty, s)
   in
   match plyr, gstate with
   | Player1, (s1,s2) -> let (a,b) = makeMove s2 crd in (a, (s1,b))

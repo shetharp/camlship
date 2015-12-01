@@ -47,7 +47,7 @@ val ship_length : ship -> int
  * new tilestate passed back in the tuple as an option. If coord is out of range
  * or already played, then return None for the tilestate option and return the
  * original grid. *)
-val turn : gamestate -> coord -> player -> (tilestate option * gamestate)
+val turn : gamestate -> coord -> player -> (tilestate * gamestate)
 
 (* Returns true if there are no ships remaining on the board that have
  * not been destroyed.
