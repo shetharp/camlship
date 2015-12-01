@@ -164,6 +164,25 @@ let out_of_bounds ((letter,number) : coord) (d : dir) (s : ship) : bool =
   else true
 
 let overlap (g : grid) (c : coord) : bool =
+  let rowNum = (Char.code (fst crd)) - 65 in
+  let colNum = snd crd in
+  let rec find_in_row row acc: (terrain * tilestate) list =
+    match row with
+    | [] -> failwith "out of range"
+    | h::t -> if acc = colNum
+              then begin match (fst h) with
+                | ShipPart(_) -> true
+                | Water -> false
+              else find_in_row t (acc+1)
+  in
+  let rec find g acc : grid =
+    match g with
+    | [] -> failwith "out of range"
+    | h::t -> if acc = rowNum
+              then find_in_row h 0
+              else find t (acc+1)
+  in
+  find g 0
 
 let rec replace_tiles (g : grid) (ship : ship) (c : coord)
                         (d : dir) (i : int) : grid option =
@@ -195,8 +214,6 @@ let place_ship (side : side) (ship : ship)
   else
     let g = side.board in
     replace_tiles side g ship c d (ship_length ship)
-
-
 
 (* -----------------------------------------------------------------------------
  * Game State Functions - Display Gamestate

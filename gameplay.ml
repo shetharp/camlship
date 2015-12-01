@@ -44,19 +44,6 @@ let translate (instr : string) : coord option * dir option =
       let d_option = dir_of_string (String.uppercase d) in
       (c_option, d_option)
 
-let out_of_bounds ((letter,number) : coord) (d : dir) : bool =
-  let hrow = (Char.code letter) - 65 in
-  let hcol = number in
-  let trow =
-    match dir with
-    | Up ->
-    | Down ->
-    | _ ->
-
-  if number > grid_size || number < 0 then false
-  else if ((Char.code letter) - 65) > grid_size then false
-  else true
-
 let rec place_ships (side : side) (ships : ship list) : side =
   match ships with
   | [] -> side
