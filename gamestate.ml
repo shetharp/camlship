@@ -35,9 +35,7 @@ type grid = (terrain * tilestate) list list
 
 type coord = char * int
 
-type fleet = (ship * coord list) list
-
-type dir = Up | Down | Left | Right
+type fleet = ship list
 
 type player = Player1 | Player2
 
@@ -107,7 +105,7 @@ let replace_element g ts crd : grid =
  *    then tilestate is Empty and the gamestate is returned unchanged.
  *  Precondition: Player is the player that is making the move.
  *)
-let turn gstate crd plyr : (tilestate * gamestate) =
+let turn gstate crd plyr : (tilestate option * gamestate) =
   let makeMove s c =
     let g = s.board in
     try
@@ -148,7 +146,7 @@ let turn gstate crd plyr : (tilestate * gamestate) =
  * TODO: Implementation spec/comments
 *)
 let place_ship (side : side) (ship : ship)
-                  (c : coord) (d : dir) : side =
+                  (c : coord) : side =
   failwith "must implement"
 
 
