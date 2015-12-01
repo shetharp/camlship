@@ -33,7 +33,9 @@ type fleet = (ship * coord list) list
 (* Directions that the ship can placed*)
 type dir = Up | Down | Left | Right
 
-type player = Player1 of string | Player2 of string
+type player = Player1| Player2
+
+type playerstate = {first : string; second : string; current : player}
 
 type side = {board : grid; ships : fleet}
 
@@ -45,7 +47,8 @@ type gamestate = side * side
 val turn : gamestate -> coord -> player -> tilestate * gamestate
 
 (* Returns true if there are no ships remaining on the board that have
- * not been destroyed. Thus the game will end *)
+ * not been destroyed.
+ * Precondition: Each side in the gamestate contains a grid that is not empty*)
 val victory : gamestate -> player option
 
 (* Prints out the grid while clearly displaying

@@ -39,7 +39,9 @@ type fleet = (ship * coord list) list
 
 type dir = Up | Down | Left | Right
 
-type player = Player1 of string | Player2 of string
+type player = Player1 | Player2
+
+type playerstate = {first : string; second : string; current : player}
 
 type side = {board : grid; ships : fleet}
 
@@ -70,13 +72,62 @@ let ship_length = function
 (* -----------------------------------------------------------------------------
  * Game State Functions - Turn
 ----------------------------------------------------------------------------- *)
+(* We'll probably want a function that..
+ *   (1) Checks if the coordinate is out of the grid's range
+ *   (2) Translates coordinates to indices
+ *)
 
-(** Returns: TODO
- * TODO: Implementation spec/comments
-*)
+let get_row c = (Char.code (Char.uppercase c)) - (Char.code 'A')
+
+(* Precondition: crd is a valid coordinate *)
+let replace_element g ts crd : grid =
+  let rowNum = get_row (fst crd) in
+  let colNum = snd crd in
+  let rec replace_in_row row acc: (terrain * tilestate) list =
+    match row with
+    | [] -> []
+    | h::t -> if acc = colNum
+              then
+                let (a,_) = h in
+                (a,ts) :: (replace_in_row t (acc+1))
+              else h :: (replace_in_row t (acc+1))
+  in
+  let rec replace g acc : grid =
+    match g with
+    | [] -> []
+    | h::t -> if acc = rowNum
+              then (replace_in_row h 0) :: (replace t (acc+1))
+              else h :: (replace t (acc+1))
+  in
+  replace g 0
+
+(*Currently can handle lowercase or uppercase coords*)
+(** Returns: a pair of the tilestate and new gamestate after a move has been
+ *    made. If the coordinate is not a valid tile or it has already been picked,
+ *    then tilestate is Empty and the gamestate is returned unchanged.
+ *  Precondition: Player is the player that is making the move.
+ *)
 let turn gstate crd plyr : (tilestate * gamestate) =
-  failwith "TODO - turn"
-
+  let makeMove s c =
+    let g = s.board in
+    try
+      let row = List.nth g (get_row (fst c)) in
+      let tile = List.nth row (snd c) in
+      begin match tile with
+      | (Water, Empty) -> let newg = replace_element g Miss crd in
+                          let news = {board = newg; ships = s.ships} in
+                          (Miss, news)
+      | (ShipPart _, Empty) -> let newg = replace_element g Miss crd in
+                               let news = {board = newg; ships = s.ships} in
+                               (Hit, news)
+      | _ -> raise (Failure "Already hit")
+      end
+    with
+      _ -> (Empty, s)
+  in
+  match plyr, gstate with
+  | Player1, (s1,s2) -> let (a,b) = makeMove s2 crd in (a, (s1,b))
+  | Player2, (s1,s2) -> let (a,b) = makeMove s1 crd in (a, (b,s2))
 
 (* -----------------------------------------------------------------------------
  * Game State Functions - Victory
@@ -85,8 +136,8 @@ let turn gstate crd plyr : (tilestate * gamestate) =
 (** Returns: TODO
  * TODO: Implementation spec/comments
 *)
-let victory gstate : (player option) =
-  failwith "TODO - victory"
+(*let victory gstate : (player option) =
+  failwith "TODO - victory"*)
 
 
 (* -----------------------------------------------------------------------------
@@ -125,11 +176,11 @@ let display_gamestate gstate plyr (* own [of type bool] *) =
   (* Determine which player's board to display *)
   let brd = (
     match plyr, own with
-    | Player1 n, true
-    | Player2 n, false ->
+    | Player1, true
+    | Player2, false ->
                     (fst gstate).board
-    | Player1 n, false
-    | Player2 n, true -> (snd gstate).board
+    | Player1, false
+    | Player2, true -> (snd gstate).board
   ) in
   (* Helper function for displaying a row's tilestates *)
   let display_row rw =
@@ -160,6 +211,6 @@ let victory (gs : gamestate) : player option =
     ) 0 b in
     result = 0
   in
-  if vic_on_board (fst gs).board then Some (Player2("player2"))
-  else if vic_on_board (snd gs).board then Some (Player1("player1"))
+  if vic_on_board (fst gs).board then Some (Player2)
+  else if vic_on_board (snd gs).board then Some (Player1)
   else None
