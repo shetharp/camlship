@@ -129,10 +129,10 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
         else ps.current) in
         let newps = {first = ps.first; second = ps.second; current = newcurp} in
         repl newgs newps true
-      )
+        )
       | Player2 -> (print_endline ps.first^"'s turn. Make your move."
         repl gs ps true
-      )
+        )
       end
   end
 (* -----------------------------------------------------------------------------

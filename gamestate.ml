@@ -33,6 +33,8 @@ type tilestate = Hit | Miss | Empty
 
 type grid = (terrain * tilestate) list list
 
+type dir = Up | Down | Left | Right
+
 type coord = char * int
 
 type fleet = ship list
@@ -147,35 +149,36 @@ let out_of_bounds ((letter,number) : coord) (d : dir) (s : ship) : bool =
   let hrow = (Char.code letter) - 65 in
   let hcol = number in
   let trow =
-    match dir with
+    match d with
     | Up -> hrow - (ship_length s) + 1
     | Down -> hrow + (ship_length s) - 1
-    | _ -> hrow
+    | _ -> hrow in
   let tcol =
-    match dir with
+    match d with
     | Left -> hcol - (ship_length s) + 1
     | Right -> hcol + (ship_length s) - 1
-    | _ -> hcol
+    | _ -> hcol in
   if (hrow > grid_size || hrow < 0) ||
      (hcol > grid_size || hcol < 0) ||
      (trow > grid_size || trow < 0) ||
      (tcol > grid_size || tcol < 0)
-     then false
-  else true
+     then true
+  else false
 
-let overlap (g : grid) (c : coord) : bool =
+let overlap (g : grid) (crd : coord) : bool =
   let rowNum = (Char.code (fst crd)) - 65 in
   let colNum = snd crd in
-  let rec find_in_row row acc: (terrain * tilestate) list =
+  let rec find_in_row row acc: bool =
     match row with
     | [] -> failwith "out of range"
     | h::t -> if acc = colNum
               then begin match (fst h) with
-                | ShipPart(_) -> true
+                | ShipPart _ -> true
                 | Water -> false
+                end
               else find_in_row t (acc+1)
   in
-  let rec find g acc : grid =
+  let rec find g acc : bool =
     match g with
     | [] -> failwith "out of range"
     | h::t -> if acc = rowNum
@@ -188,19 +191,20 @@ let rec replace_tiles (g : grid) (ship : ship) (c : coord)
                         (d : dir) (i : int) : grid option =
   if i = 0 then Some(g)
   else
-    let row = (Char.code (fst coord)) - 65 in
-    let col = snd coord in
+    let row = (Char.code (fst c)) - 65 in
+    let col = snd c in
     let (new_row, new_col) =
       begin match d with
       | Down -> (row + 1, col)
       | Up -> (row - 1, col)
       | Left -> (row, col - 1)
-      | Right -> (row, col + 1) in
+      | Right -> (row, col + 1)
+      end in
     let new_coord = (Char.chr (new_row + 65), new_col) in
     if overlap g c then None
     else
-      let new_grid = replace_element g (ShipPart(ship), Empty) c
-      replace_tiles new_grid new_coord d (i-1)
+      let new_grid = replace_element g (ShipPart(ship), Empty) c in
+      replace_tiles new_grid ship new_coord d (i-1)
 
 (** Returns: Returns a side option with either the updated side
       or None if the coordinates were out of bounds or overlapping
@@ -208,12 +212,15 @@ let rec replace_tiles (g : grid) (ship : ship) (c : coord)
     Pre: Takes in a coordinate and direction.
  * TODO: Implementation spec/comments
 *)
-let place_ship (side : side) (ship : ship)
+let place_ship (sid : side) (ship : ship)
                   (c : coord) (d : dir) : side option =
-  if out_of_bounds c d then None
+  if out_of_bounds c d ship then None
   else
-    let g = side.board in
-    replace_tiles side g ship c d (ship_length ship)
+    let g = sid.board in
+    begin match replace_tiles g ship c d (ship_length ship) with
+    | Some(g) -> Some {board = g; ships = ship::(sid.ships)}
+    | None -> None
+    end
 
 (* -----------------------------------------------------------------------------
  * Game State Functions - Display Gamestate
