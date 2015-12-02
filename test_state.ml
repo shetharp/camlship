@@ -204,7 +204,7 @@ TEST = display_gamestate c pl1 true false = gr_empty_str
 
 let (b,c) = turn c ('a', 0) Player1
 
-TEST = b = None
+TEST = b = Some Empty
 TEST = display_gamestate c pl2 true false = gr_miss_fst_str
 TEST = display_gamestate c pl1 true false = gr_empty_str
 
