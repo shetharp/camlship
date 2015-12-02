@@ -228,15 +228,15 @@ let place_ship (sid : side) (ship : ship)
  * ship placement information, while hiding their opponent's terrain info
 *)
 let display_gamestate gstate plyr own =
-  (* Determine which player's board to display *)
-  let brd = (
-    match plyr, own with
-    | Player1, true
-    | Player2, false ->
-                    (fst gstate).board
-    | Player1, false
-    | Player2, true -> (snd gstate).board
-  ) in
+
+  (* Helper function to generate the header row of integers from 0 to n.
+   * Contains two spaces in the front for proper alignment. *)
+  let rec gen_hrow n hrow_str =
+    match n with
+    | 0 -> "  " ^ shrow_str
+    | _ -> gen_hrow (n-1) ((string_of_int n) ^ hrow_str)
+  in
+
   (* Helper function for displaying a row's tilestates *)
   let display_row rw =
     List.fold_left (fun acc r ->
@@ -247,10 +247,33 @@ let display_gamestate gstate plyr own =
       | (ShipPart s, Empty) ->  acc ^ (if own then "#" else "-")
       | (_, _) ->           acc ^ "?"
     ) "" rw in
+
+  (* Helper function for displaying a game side, formatted with letters in front
+   * of the rows *)
+  let rec display_result brows n stracc =
+    match board with
+    | [] -> stracc
+    | h::tl ->
+      let letter = String.make 1 (char_of_int n) in
+      display_result tl (n + 1) (stracc ^ letter ^ " " ^ (display_row h) ^ "\n")
+  in
+
+  (* Determine which player's board to display *)
+  let brd = (
+    match plyr, own with
+    | Player1, true
+    | Player2, false ->
+                    (fst gstate).board
+    | Player1, false
+    | Player2, true -> (snd gstate).board
+  ) in
+
+  let gsize = List.length brd in
+  let hrow = gen_hrow gsize "" in
+
+
   (* Return a display result in the form of a string for each row *)
-  List.fold_left (fun result row ->
-    result ^ display_row row ^ "\n"
-  ) "" brd
+  display_result brd 65 hrow
 
 
 (* -----------------------------------------------------------------------------
