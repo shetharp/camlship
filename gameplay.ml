@@ -90,12 +90,12 @@ let display_boards (gs : gamestate) (p : player) : gamestate =
 
 let try_move (gs : gamestate) (s: string) (p : player) : gamestate * bool=
   let c = String.get s 0 in
-  let is = String.get s 1 in
+  let is = String.sub s 1 1 in
   try
-    let i = int_of_char is in
+    let i = int_of_string is in
     let (t, gnew) = turn gs (c,i) p in
     match t with
-    | None -> print_endline "[!] Invalid move. Try again"; (gs, false)
+    | None -> print_endline "[!] Invalid move. Try again!!"; (gs, false)
     | Some v -> (
       match v with
       | Empty -> print_endline "[!] Invalid move. Try again"; (gs, false)
@@ -144,7 +144,9 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
         repl newgs newps true
         )
       | Player2 -> (print_endline (ps.second^"'s turn. Make your move.");
-        repl gs ps true)
+        let newcurp = Player1 in
+        let newps = {first = ps.first; second = ps.second; current = newcurp} in
+        repl gs newps true)
       end
   end
 (* -----------------------------------------------------------------------------
@@ -176,7 +178,7 @@ let generate_fleet () : fleet =
 let main () =
   (*TYPE IN DIRECTIONS*)
 
-  print_endline "Please enter player name."
+  print_endline "Please enter player name.";
 
   let name = read_line () in
 
@@ -188,10 +190,10 @@ let main () =
 
   (* Placing ships phase *)
   (* side1 places ships *)
-  print_endline "Player1, place your ships!";
+  Printf.printf "%s, place your ships!" ps.first;
   let side1 = place_ships init_side1 ships in
   (* side2 places ships *)
-  print_endline "Player1, place your ships!";
+  Printf.printf "%s, place your ships!" ps.second;
   let side2 = place_ships init_side2 ships in
 
   let gamestate = (side1, side2) in
