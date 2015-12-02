@@ -88,9 +88,13 @@ let try_move (gs : gamestate) (s: string) (p : player) : gamestate * bool=
     let i = int_of_char is in
     let (t, gnew) = turn gs (c,i) p in
     match t with
-    | Empty -> print_endline "[!] Invalid move. Try again"; (gs, false)
-    | Hit   -> print_endline "You hit a ship! Your turn again!"; (gnew, false)
-    | Miss  -> print_endline "You missed."; (gnew, true)
+    | None -> print_endline "[!] Invalid move. Try again"; (gs, false)
+    | Some v -> (
+      match v with
+      | Empty -> print_endline "[!] Invalid move. Try again"; (gs, false)
+      | Hit   -> print_endline "You hit a ship! Your turn again!"; (gnew, false)
+      | Miss  -> print_endline "You missed."; (gnew, true)
+    )
   with _ -> print_endline "[!] Invalid move. Try again."; (gs, false)
 
 
@@ -114,7 +118,7 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
   match v with
   | Some Player1 -> print_endline ("[!!] Congratulations! "^ps.first^" has won!")
   | Some Player2 -> print_endline ("[!!] Congratulations! "^ps.second^" has won!")
-  | None   -> begin
+  | None -> begin
     if (not continue)
     then (print_endline "The game has ended. Thanks for playing!";)
     else begin
