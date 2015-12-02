@@ -44,6 +44,11 @@ let rw_miss_fst = [
   (Water, Miss); (Water, Empty); (Water, Empty); (Water, Empty)
 ]
 
+let rw_empty_ship = [
+  (ShipPart(Cruiser), Empty); (ShipPart(Cruiser), Empty); (ShipPart(Cruiser), Empty);
+  (ShipPart(Jetski), Empty)
+]
+
 let rw_hit = [
   (ShipPart(Cruiser), Hit); (ShipPart(Cruiser), Hit); (ShipPart(Cruiser), Hit);
   (ShipPart(Jetski), Hit)
@@ -82,6 +87,7 @@ let gr_miss_row = [rw_empty; rw_miss; rw_empty; rw_hit]
 let gr_hit_row = [rw_empty; rw_empty; rw_hit; rw_empty]
 let gr_mix = [rw_miss_fst; rw_empty; rw_mix; rw_hit_lst]
 let gr_miss_hit_empty = [rw_miss_fst; rw_hit_lst; rw_empty; rw_mix]
+let gr_empty_ship = [rw_empty_ship; rw_empty; rw_empty_ship; rw_empty]
 
 let gr_empty_str =
   rw_empty_str ^ "\n" ^
@@ -125,7 +131,6 @@ let gr_mix_str =
   rw_empty_str ^ "\n" ^
   rw_mix_str ^ "\n" ^
   rw_hit_lst_str ^ "\n"
-
 
 
 (* -----------------------------------------------------------------------------
@@ -194,3 +199,28 @@ TEST = b = Some Miss
 TEST = display_gamestate c pl2 true = gr_miss_fst_row_str
 TEST = display_gamestate c pl1 true = gr_empty_str
 
+let sd_empty_ship = {board = gr_empty_ship; ships = [Jetski; Cruiser]}
+
+let c = (sd_empty, sd_empty_ship)
+let (b,c) = turn c ('a',0) Player1
+
+TEST = b = Some Hit
+
+TEST = display_gamestate c pl2 true = "X###\n----\n####\n----\n"
+
+let (b,c) = turn c ('a',1) Player1
+let (b,c) = turn c ('a',2) Player1
+let (b,c) = turn c ('a',3) Player1
+let (b,c) = turn c ('b',0) Player1
+let (b,c) = turn c ('b',1) Player1
+let (b,c) = turn c ('b',2) Player1
+let (b,c) = turn c ('b',3) Player1
+
+TEST = b = Some Miss
+TEST = display_gamestate c pl2 true = "XXXX\noooo\n####\n----\n"
+
+
+(*TEST = print_bytes (display_gamestate c pl2 true); true*)
+
+
+(*gamestate line 229*)
