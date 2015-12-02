@@ -134,6 +134,10 @@ let turn gstate crd plyr : (tilestate option * gamestate) =
  * Game State Functions - Place Ship
 ----------------------------------------------------------------------------- *)
 
+(* Returns: true if the ship at the current coordinate and direction would
+ *  be out of bounds on the board
+ * Pre: None
+*)
 let out_of_bounds ((letter,number) : coord) (d : dir) (s : ship) : bool =
   let hrow = (Char.code letter) - 65 in
   let hcol = number in
@@ -154,6 +158,9 @@ let out_of_bounds ((letter,number) : coord) (d : dir) (s : ship) : bool =
      then true
   else false
 
+(* Returns: true if there already exists a ship at the coordinate
+ * Pre: The coordinate is within range
+*)
 let overlap (g : grid) (crd : coord) : bool =
   let rowNum = (Char.code (fst crd)) - 65 in
   let colNum = snd crd in
@@ -176,6 +183,7 @@ let overlap (g : grid) (crd : coord) : bool =
   in
   find g 0
 
+(* Replace the tiles on the grid with ship parts *)
 let rec replace_tiles (g : grid) (ship : ship) (c : coord)
                         (d : dir) (i : int) : grid option =
   if i = 0 then Some(g)
@@ -199,7 +207,6 @@ let rec replace_tiles (g : grid) (ship : ship) (c : coord)
       or None if the coordinates were out of bounds or overlapping
       with another ship.
     Pre: Takes in a coordinate and direction.
- * TODO: Implementation spec/comments
 *)
 let place_ship (sid : side) (ship : ship)
                   (c : coord) (d : dir) : side option =

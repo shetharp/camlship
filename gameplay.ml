@@ -5,6 +5,7 @@ open Str
 (* -----------------------------------------------------------------------------
  * PLACING SHIPS PHASE
 ----------------------------------------------------------------------------- *)
+(* Converts a ship type to its string value *)
 let ship_string = function
  | Jetski -> "Jetski"
  | Patrol -> "Patrol"
@@ -13,6 +14,7 @@ let ship_string = function
  | Battleship -> "Battleship"
  | Carrier -> "Carrier"
 
+(* Converts a string to a direction option or None if not a valid direction *)
 let dir_of_string (s : string) : dir option =
   if s = "DOWN" then Some(Down)
   else if s = "UP" then Some(Up)
@@ -20,7 +22,11 @@ let dir_of_string (s : string) : dir option =
   else if s = "RIGHT" then Some(Right)
   else None
 
-(* Returns an uppercase character and a number as a coord option and a direction option *)
+(* Returns: an uppercase character and a number as a coord option
+ *  and a direction option. Return one or both of them as None if
+ *  they are not valid coordinates or directions.
+ * Pre: None
+*)
 let translate (instr : string) : coord option * dir option =
   let words = List.map (String.trim)
                 (Str.bounded_split (Str.regexp " ") instr 2) in
@@ -44,6 +50,10 @@ let translate (instr : string) : coord option * dir option =
       let d_option = dir_of_string (String.uppercase d) in
       (c_option, d_option)
 
+(* Returns: a side with the ships from ship list placed on the board and the
+ *  fleet updated to include the ships
+ * Pre: None
+*)
 let rec place_ships (side : side) (ships : ship list) : side =
   match ships with
   | [] -> side
