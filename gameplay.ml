@@ -68,7 +68,10 @@ and a direction for the tail of your ship to point:  " (ship_string ship);
               (print_endline "These coordinates are out of bounds
 or your ship overlaps with another. Try Again";
               place_ships side ships)
-          | Some(new_side) -> place_ships new_side t
+          | Some(new_side) ->
+              let gs_buffer = (new_side, {board = []; ships = []}) in
+              print_endline (display_gamestate gs_buffer Player1 true);
+              place_ships new_side t
           end
       end
 
