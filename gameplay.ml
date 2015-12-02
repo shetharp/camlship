@@ -49,8 +49,8 @@ let rec place_ships (side : side) (ships : ship list) : side =
   | [] -> side
   | ship::t ->
       print_newline ();
-      Printf.printf "Placing your %s. Enter a coordinate for the head of your ship\n
-        and a direction for the tail of your ship to point:  " (ship_string ship);
+      Printf.printf "Placing your %s. Enter a coordinate for the head of your ship
+and a direction for the tail of your ship to point:  " (ship_string ship);
       let (c,d) = translate (String.trim (read_line ())) in
       begin match c,d with
       | None,None ->
@@ -65,7 +65,8 @@ let rec place_ships (side : side) (ships : ship list) : side =
       | Some(c),Some(d) ->
           begin match place_ship side ship c d with
           | None ->
-              (print_endline "These coordinates are out of bounds. Try Again";
+              (print_endline "These coordinates are out of bounds
+or your ship overlaps with another. Try Again";
               place_ships side ships)
           | Some(new_side) -> place_ships new_side t
           end
@@ -166,7 +167,6 @@ let generate_fleet () : fleet =
     else []
 
 let main () =
-  (* SHOULD ASK FOR PLAYER USERNAMES *)
 
   let (init_side1, init_side2) = initialize_gamestate () in
 
