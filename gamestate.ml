@@ -72,11 +72,10 @@ let ship_length = function
 (* -----------------------------------------------------------------------------
  * Game State Functions - Turn
 ----------------------------------------------------------------------------- *)
-(* We'll probably want a function that..
- *   (1) Checks if the coordinate is out of the grid's range
- *   (2) Translates coordinates to indices
- *)
 
+(* Given a char, returns an int representing the corresponding row.
+ *     e.g. a -> 0, b-> 1, etc.
+ *)
 let get_row c = (Char.code (Char.uppercase c)) - (Char.code 'A')
 
 (* Returns an updated grid of g with the indicated coordinate replaced with ts.
@@ -100,12 +99,12 @@ let replace_element (g:grid) (tile:terrain*tilestate) (crd:coord) : grid =
   in
   replace g 0
 
-(*Interp will take care of checking out of bounds. - can remove that from below*)
-(*Currently can handle lowercase or uppercase coords*)
 
 (** Returns: a pair of the tilestate and new gamestate after a move has been
- *    made. If the coordinate is not a valid tile or it has already been picked,
- *    then tilestate is None and the gamestate is returned unchanged.
+ *    made.
+ *  If the coordinate is out of bounds, the tilestate is None; if the tile has
+ *    already been picked, the tilestate is Some Empty. In both cases, the
+ *    gamestate is returned unchanged.
  *  Precondition: Player is the player that is making the move.
  *)
 let turn gstate crd plyr : (tilestate option * gamestate) =
@@ -121,7 +120,7 @@ let turn gstate crd plyr : (tilestate option * gamestate) =
       | (ShipPart x, Empty) -> let newg = replace_element g (ShipPart x,Hit) crd in
                                let news = {board = newg; ships = s.ships} in
                                (Some Hit, news)
-      | _ -> raise (Failure "Already hit")
+      | _ -> (Some Empty, s)
       end
     with
       _ -> (None, s)
@@ -228,15 +227,15 @@ let place_ship (sid : side) (ship : ship)
  * ship placement information, while hiding their opponent's terrain info
 *)
 let display_gamestate gstate plyr own =
-  (* Determine which player's board to display *)
-  let brd = (
-    match plyr, own with
-    | Player1, true
-    | Player2, false ->
-                    (fst gstate).board
-    | Player1, false
-    | Player2, true -> (snd gstate).board
-  ) in
+
+  (* Helper function to generate the header row of integers from 0 to n.
+   * Contains two spaces in the front for proper alignment. *)
+  let rec gen_hrow n hrow_str =
+    match n with
+    | 0 -> "  " ^ shrow_str
+    | _ -> gen_hrow (n-1) ((string_of_int n) ^ hrow_str)
+  in
+
   (* Helper function for displaying a row's tilestates *)
   let display_row rw =
     List.fold_left (fun acc r ->
@@ -247,10 +246,33 @@ let display_gamestate gstate plyr own =
       | (ShipPart s, Empty) ->  acc ^ (if own then "#" else "-")
       | (_, _) ->           acc ^ "?"
     ) "" rw in
+
+  (* Helper function for displaying a game side, formatted with letters in front
+   * of the rows *)
+  let rec display_result brows n stracc =
+    match board with
+    | [] -> stracc
+    | h::tl ->
+      let letter = String.make 1 (char_of_int n) in
+      display_result tl (n + 1) (stracc ^ letter ^ " " ^ (display_row h) ^ "\n")
+  in
+
+  (* Determine which player's board to display *)
+  let brd = (
+    match plyr, own with
+    | Player1, true
+    | Player2, false ->
+                    (fst gstate).board
+    | Player1, false
+    | Player2, true -> (snd gstate).board
+  ) in
+
+  let gsize = List.length brd in
+  let hrow = gen_hrow gsize "" in
+
+
   (* Return a display result in the form of a string for each row *)
-  List.fold_left (fun result row ->
-    result ^ display_row row ^ "\n"
-  ) "" brd
+  display_result brd 65 hrow
 
 
 (* -----------------------------------------------------------------------------
