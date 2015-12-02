@@ -130,16 +130,6 @@ let turn gstate crd plyr : (tilestate option * gamestate) =
   | Player1, (s1,s2) -> let (a,b) = makeMove s2 crd in (a, (s1,b))
   | Player2, (s1,s2) -> let (a,b) = makeMove s1 crd in (a, (b,s2))
 
-(* -----------------------------------------------------------------------------
- * Game State Functions - Victory
------------------------------------------------------------------------------ *)
-
-(** Returns: TODO
- * TODO: Implementation spec/comments
-*)
-(*let victory gstate : (player option) =
-  failwith "TODO - victory"*)
-
 
 (* -----------------------------------------------------------------------------
  * Game State Functions - Place Ship
@@ -263,9 +253,13 @@ let display_gamestate gstate plyr own =
   ) "" brd
 
 
+(* -----------------------------------------------------------------------------
+ * Game State Functions - Victory
+----------------------------------------------------------------------------- *)
 
-
-
+(** Returns: TODO
+ * TODO: Implementation spec/comments
+*)
 let victory (gs : gamestate) : player option =
   let unhit_in_row rw : int =
     List.fold_left (fun acc r ->
