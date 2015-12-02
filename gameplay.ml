@@ -99,13 +99,14 @@ let interp_input (gs : gamestate) (p : player) (instr : string)
   let open Str in
   let inp = Str.split (Str.regexp " ") instr in
   match inp with
-  | [] -> (gs, false) (*should error be thrown if no instruction?*)
+  | [] -> print_endline "[!] Please input a command. Try again"; (gs, false)
   | hd :: [] -> (
     match hd with
     | "show"  -> ((display_boards gs p), false)
     | "board" -> ((display_boards gs p), false)
     | _       -> (try_move gs hd p)
   )
+  | _ -> print_endline "[!] Invalid command. Try again"; (gs, false)
 
 let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
   let v = victory gs in
@@ -114,7 +115,7 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
   | Some Player2 -> print_endline ("[!!] Congratulations! "^ps.second^" has won!")
   | None   -> begin
     if (not continue)
-    then print_endline "The game has ended. Thanks for playing!"
+    then (print_endline "The game has ended. Thanks for playing!";)
     else begin
       match ps.current with
       | Player1 -> (print_endline (ps.first^"'s turn. Make your move.");
@@ -123,16 +124,15 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
         let trimmed = String.trim read in
         let input = String.lowercase trimmed in
         if input = "quit" then repl gs ps false
-        else let (newgs, switchPlayer) = interp_input gs ps input in
+        else let (newgs, switchPlayer) = interp_input gs ps.current input in
         let newcurp = (if switchPlayer
         then if ps.current = Player1 then Player2 else Player1
         else ps.current) in
         let newps = {first = ps.first; second = ps.second; current = newcurp} in
         repl newgs newps true
         )
-      | Player2 -> (print_endline ps.first^"'s turn. Make your move."
-        repl gs ps true
-        )
+      | Player2 -> (print_endline (ps.second^"'s turn. Make your move.");
+        repl gs ps true)
       end
   end
 (* -----------------------------------------------------------------------------
