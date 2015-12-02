@@ -49,8 +49,9 @@ val ship_length : ship -> int
  * original grid. *)
 val turn : gamestate -> coord -> player -> (tilestate option * gamestate)
 
-(* Returns true if there are no ships remaining on the board that have
- * not been destroyed.
+(* Returns Some [the player that won] if there are no ships remaining on
+ * the board that have not been destroyed signaling the end of the game,
+ * None if the game has not been won yet
  * Precondition: Each side in the gamestate contains a grid that is not empty*)
 val victory : gamestate -> player option
 

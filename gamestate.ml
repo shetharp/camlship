@@ -293,9 +293,10 @@ let display_gamestate gstate plyr own formatted =
  * Game State Functions - Victory
 ----------------------------------------------------------------------------- *)
 
-(** Returns: TODO
- * TODO: Implementation spec/comments
-*)
+(* Returns Some [the player that won] if there are no ships remaining on
+ * the board that have not been destroyed signaling the end of the game,
+ * None if the game has not been won yet
+ * Precondition: Each side in the gamestate contains a grid that is not empty*)
 let victory (gs : gamestate) : player option =
   let unhit_in_row rw : int =
     List.fold_left (fun acc r ->
