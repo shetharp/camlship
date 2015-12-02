@@ -238,8 +238,6 @@ let place_ship (sid : side) (ship : ship)
  * ship placement information, while hiding their opponent's terrain info
 *)
 let display_gamestate gstate plyr own =
-  (* Remove if own is implemented as an argument and spec is updated*)
-
   (* Determine which player's board to display *)
   let brd = (
     match plyr, own with
@@ -256,7 +254,7 @@ let display_gamestate gstate plyr own =
       | (Water, Empty) ->   acc ^ "-"
       | (Water, Miss) ->    acc ^ "o"
       | (ShipPart s, Hit) ->    acc ^ "X"
-      | (ShipPart s, Empty) ->  acc ^ "#"
+      | (ShipPart s, Empty) ->  acc ^ (if own then "#" else "-")
       | (_, _) ->           acc ^ "?"
     ) "" rw in
   (* Return a display result in the form of a string for each row *)
