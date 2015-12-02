@@ -78,8 +78,12 @@ or your ship overlaps with another. Try Again";
 ----------------------------------------------------------------------------- *)
 
 let display_boards (gs : gamestate) (p : player) : gamestate =
-  let s = display_gamestate gs p in
-  print_endline s; gs
+  let opp = display_gamestate gs p false in
+  let own = display_gamestate gs p true in
+  print_endline "Opponent's board:";
+  print_endline opp;
+  print_endline "Your board:"
+  print_endline own; gs
 
 let try_move (gs : gamestate) (s: string) (p : player) : gamestate * bool=
   let c = String.get s 0 in
