@@ -10,7 +10,7 @@
 
 (*TODO: All caps version of 'grid_size' is unacceptable for compiler.
 Fix it in the gamestate.mli. Potentially unnecessary--get rid of it entirely? *)
-let grid_size = 4
+let grid_size = 10
 
 
 
@@ -72,11 +72,10 @@ let ship_length = function
 (* -----------------------------------------------------------------------------
  * Game State Functions - Turn
 ----------------------------------------------------------------------------- *)
-(* We'll probably want a function that..
- *   (1) Checks if the coordinate is out of the grid's range
- *   (2) Translates coordinates to indices
- *)
 
+(* Given a char, returns an int representing the corresponding row.
+ *     e.g. a -> 0, b-> 1, etc.
+ *)
 let get_row c = (Char.code (Char.uppercase c)) - (Char.code 'A')
 
 (* Returns an updated grid of g with the indicated coordinate replaced with ts.
@@ -100,12 +99,12 @@ let replace_element (g:grid) (tile:terrain*tilestate) (crd:coord) : grid =
   in
   replace g 0
 
-(*Interp will take care of checking out of bounds. - can remove that from below*)
-(*Currently can handle lowercase or uppercase coords*)
 
 (** Returns: a pair of the tilestate and new gamestate after a move has been
- *    made. If the coordinate is not a valid tile or it has already been picked,
- *    then tilestate is None and the gamestate is returned unchanged.
+ *    made.
+ *  If the coordinate is out of bounds, the tilestate is None; if the tile has
+ *    already been picked, the tilestate is Some Empty. In both cases, the
+ *    gamestate is returned unchanged.
  *  Precondition: Player is the player that is making the move.
  *)
 let turn gstate crd plyr : (tilestate option * gamestate) =
@@ -121,7 +120,7 @@ let turn gstate crd plyr : (tilestate option * gamestate) =
       | (ShipPart x, Empty) -> let newg = replace_element g (ShipPart x,Hit) crd in
                                let news = {board = newg; ships = s.ships} in
                                (Some Hit, news)
-      | _ -> raise (Failure "Already hit")
+      | _ -> (Some Empty, s)
       end
     with
       _ -> (None, s)

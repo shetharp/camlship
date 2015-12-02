@@ -70,7 +70,7 @@ or your ship overlaps with another. Try Again";
               place_ships side ships)
           | Some(new_side) ->
               let gs_buffer = (new_side, {board = []; ships = []}) in
-              print_endline (display_gamestate gs_buffer Player1 true);
+              print_endline (display_gamestate gs_buffer Player1 true true);
               place_ships new_side t
           end
       end
@@ -81,8 +81,8 @@ or your ship overlaps with another. Try Again";
 ----------------------------------------------------------------------------- *)
 
 let display_boards (gs : gamestate) (p : player) : gamestate =
-  let opp = display_gamestate gs p false in
-  let own = display_gamestate gs p true in
+  let opp = display_gamestate gs p false true in
+  let own = display_gamestate gs p true true in
   print_endline "Opponent's board:";
   print_endline opp;
   print_endline "Your board:";
@@ -98,7 +98,8 @@ let try_move (gs : gamestate) (s: string) (p : player) : gamestate * bool=
     | None -> print_endline "[!] Invalid move. Try again!!"; (gs, false)
     | Some v -> (
       match v with
-      | Empty -> print_endline "[!] Invalid move. Try again"; (gs, false)
+      | Empty -> (print_endline "[!] You've already tried that spot. Try again";
+        (gs, false))
       | Hit   -> print_endline "You hit a ship! Your turn again!"; (gnew, false)
       | Miss  -> print_endline "You missed."; (gnew, true)
     )
