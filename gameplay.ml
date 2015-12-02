@@ -131,7 +131,7 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
     else begin
       match ps.current with
       | Player1 -> (print_endline (ps.first^"'s turn. Make your move.");
-        print_string (display_gamestate gs Player1);
+        let _ = display_boards gs ps.current in
         let read = read_line () in
         let trimmed = String.trim read in
         let input = String.lowercase trimmed in
