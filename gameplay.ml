@@ -174,6 +174,13 @@ let generate_fleet () : fleet =
     else []
 
 let main () =
+  (*TYPE IN DIRECTIONS*)
+
+  print_endline "Please enter player name."
+
+  let name = read_line () in
+
+  let ps = {first = name; second = "Computer"; current = Player1} in
 
   let (init_side1, init_side2) = initialize_gamestate () in
 
@@ -186,10 +193,8 @@ let main () =
   let side2 = place_ships init_side2 ships in
 
   let gamestate = (side1, side2) in
-  ignore(gamestate)
 
-  (* CALL REPL TO BEGIN ATTACK PHASE *)
-  (* call with tuple of players, true to start w player 1*)
+  repl gamestate ps true
 
 let _ = main()
 
