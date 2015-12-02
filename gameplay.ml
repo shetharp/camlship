@@ -95,7 +95,7 @@ let try_move (gs : gamestate) (s: string) (p : player) : gamestate * bool=
     let i = int_of_char is in
     let (t, gnew) = turn gs (c,i) p in
     match t with
-    | None -> print_endline "[!] Invalid move. Try again"; (gs, false)
+    | None -> print_endline "[!] Invalid move. Try again!!"; (gs, false)
     | Some v -> (
       match v with
       | Empty -> print_endline "[!] Invalid move. Try again"; (gs, false)
@@ -176,7 +176,7 @@ let generate_fleet () : fleet =
 let main () =
   (*TYPE IN DIRECTIONS*)
 
-  print_endline "Please enter player name."
+  print_endline "Please enter player name.";
 
   let name = read_line () in
 
