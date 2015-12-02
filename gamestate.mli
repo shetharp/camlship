@@ -58,7 +58,7 @@ val victory : gamestate -> player option
  * the terrain and action for each tile
  * Prints out the grid displaying only the action associated with each tile
  * and not showing the terrain **)
-val display_gamestate: gamestate -> player -> bool -> string
+val display_gamestate: gamestate -> player -> bool -> bool -> string
 
 (* Places the ship on the grid starting at the coord given and in the
  * direction on the board. Returns a new grid and the players fleet updated

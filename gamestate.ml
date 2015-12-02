@@ -227,35 +227,49 @@ let place_ship (sid : side) (ship : ship)
  * TODO: In the future, extend functionality to show the player their own
  * ship placement information, while hiding their opponent's terrain info
 *)
-let display_gamestate gstate plyr own =
+let display_gamestate gstate plyr own formatted =
 
   (* Helper function to generate the header row of integers from 0 to n.
    * Contains two spaces in the front for proper alignment. *)
-  let rec gen_hrow n hrow_str =
+  let rec display_hrow n hrow_str =
     match n with
-    | 0 -> "  " ^ shrow_str
-    | _ -> gen_hrow (n-1) ((string_of_int n) ^ hrow_str)
+    | -1 -> "    " ^ hrow_str ^ "\n\n"
+    | _ -> display_hrow (n-1) ((string_of_int n) ^ " " ^ hrow_str)
   in
 
   (* Helper function for displaying a row's tilestates *)
   let display_row rw =
     List.fold_left (fun acc r ->
       match r with
-      | (Water, Empty) ->   acc ^ "-"
-      | (Water, Miss) ->    acc ^ "o"
-      | (ShipPart s, Hit) ->    acc ^ "X"
-      | (ShipPart s, Empty) ->  acc ^ (if own then "#" else "-")
-      | (_, _) ->           acc ^ "?"
+      | (Water, Empty) ->
+          acc ^ "-" ^ (if formatted then " " else "")
+
+      | (Water, Miss) ->
+          acc ^ "o" ^ (if formatted then " " else "")
+
+      | (ShipPart s, Hit) ->
+          acc ^ "X" ^ (if formatted then " " else "")
+
+      | (ShipPart s, Empty) ->
+          acc ^ (if own then "#" else "-") ^ (if formatted then " " else "")
+
+      | (_, _) ->
+          acc ^ "?" ^ (if formatted then " " else "")
+
     ) "" rw in
 
   (* Helper function for displaying a game side, formatted with letters in front
    * of the rows *)
   let rec display_result brows n stracc =
-    match board with
+    match brows with
     | [] -> stracc
     | h::tl ->
-      let letter = String.make 1 (char_of_int n) in
-      display_result tl (n + 1) (stracc ^ letter ^ " " ^ (display_row h) ^ "\n")
+      let letter =
+        if formatted
+        then (String.make 1 (char_of_int n) ^ "   ")
+        else ""
+      in
+      display_result tl (n + 1) (stracc ^ letter ^ (display_row h) ^ "\n")
   in
 
   (* Determine which player's board to display *)
@@ -269,7 +283,7 @@ let display_gamestate gstate plyr own =
   ) in
 
   let gsize = List.length brd in
-  let hrow = gen_hrow gsize "" in
+  let hrow = if formatted then display_hrow (gsize - 1) "" else "" in
 
 
   (* Return a display result in the form of a string for each row *)

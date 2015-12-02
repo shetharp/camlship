@@ -158,6 +158,7 @@ let sd_mix_new = {board = gr_mix; ships = [Jetski; Cruiser]}
  * TEST - Display Gamestate
 ============================================================================= *)
 
+
 TEST = display_gamestate (sd_empty, sd_empty) pl1 true = gr_empty_str
 TEST = display_gamestate (sd_empty, sd_empty) pl2 true = gr_empty_str
 TEST = display_gamestate (sd_empty, sd_mix) pl1 true = gr_empty_str
@@ -177,6 +178,7 @@ TEST = display_gamestate (sd_hit_lst, sd_empty) pl2 false
 
 TEST = display_gamestate (sd_mix, sd_empty) pl2 false
         = "o---\n----\n-oX-\n---X\n"
+
 
 (* =============================================================================
  * TEST - Victory Check
@@ -234,10 +236,7 @@ let (b,c) = turn c ('b',2) Player1
 let (b,c) = turn c ('b',3) Player1
 
 TEST = b = Some Miss
-TEST = display_gamestate c pl2 true = "XXXX\noooo\n####\n----\n"
-
-
-TEST = print_bytes (display_gamestate c pl2 true); true
+(* TEST = display_gamestate c pl2 true = "XXXX\noooo\n####\n----\n" *)
 
 
 (*gamestate line 229*)
