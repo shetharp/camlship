@@ -81,8 +81,8 @@ or your ship overlaps with another. Try Again";
 ----------------------------------------------------------------------------- *)
 
 let display_boards (gs : gamestate) (p : player) : gamestate =
-  let opp = display_gamestate gs p false in
-  let own = display_gamestate gs p true in
+  let opp = display_gamestate gs p false true in
+  let own = display_gamestate gs p true true in
   print_endline "Opponent's board:";
   print_endline opp;
   print_endline "Your board:";
