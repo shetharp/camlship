@@ -160,8 +160,6 @@ TEST = display_gamestate (sd_miss_fst, sd_hit_lst) pl1 true = gr_miss_fst_str
 TEST = display_gamestate (sd_miss_fst, sd_hit_lst) pl2 true = gr_hit_lst_str
 TEST = display_gamestate (sd_miss_row, sd_hit_row) pl2 true = gr_hit_row_str
 
-TEST = display_gamestate (sd_empty, ) pl1 true = gr_empty_str
-
 
 (* =============================================================================
  * TEST - Victory Check
