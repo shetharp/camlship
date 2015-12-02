@@ -237,9 +237,8 @@ let place_ship (sid : side) (ship : ship)
  * TODO: In the future, extend functionality to show the player their own
  * ship placement information, while hiding their opponent's terrain info
 *)
-let display_gamestate gstate plyr (* own [of type bool] *) =
+let display_gamestate gstate plyr own =
   (* Remove if own is implemented as an argument and spec is updated*)
-  let own = true in
 
   (* Determine which player's board to display *)
   let brd = (
@@ -264,6 +263,10 @@ let display_gamestate gstate plyr (* own [of type bool] *) =
   List.fold_left (fun result row ->
     result ^ display_row row ^ "\n"
   ) "" brd
+
+
+
+
 
 let victory (gs : gamestate) : player option =
   let unhit_in_row rw : int =

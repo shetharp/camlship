@@ -132,48 +132,29 @@ let gr_mix_str =
  * Reusable Variables - Side Setup
 ----------------------------------------------------------------------------- *)
 
-let sd_empty = {board = gr_empty; ships = [(Jetski, [('D', 4)])]}
-let sd_miss_fst = {board = gr_miss_fst; ships = [(Jetski, [('D', 4)])]}
-let sd_hit_lst = {board = gr_hit_lst; ships = [(Jetski, [('D', 4)])]}
-let sd_miss_row = {board = gr_miss_row; ships = [(Jetski, [('D', 4)])]}
-let sd_hit_row = {board = gr_hit_row; ships = [
-    (Cruiser, [('C', 1)]);
-    (Cruiser, [('C', 2)]);
-    (Cruiser, [('C', 3)]);
-    (Jetski, [('C', 4)]);
-  ]}
-let sd_mix = {board = gr_mix; ships = [
-    (Cruiser, [('C', 1)]);
-    (Cruiser, [('C', 2)]);
-    (Cruiser, [('C', 3)]);
-    (Jetski, [('C', 4)]);
-    (Jetski, [('D', 4)])
-  ]}
-let sd_hit_row_new = {board = gr_miss_hit_empty; ships = [
-    (Cruiser, [('C', 1)]);
-    (Cruiser, [('C', 2)]);
-    (Cruiser, [('C', 3)]);
-    (Jetski, [('C', 4)]);
-  ]}
-let sd_mix_new = {board = gr_mix; ships = [
-    (Cruiser, [('C', 1)]);
-    (Cruiser, [('C', 2)]);
-    (Cruiser, [('C', 3)]);
-    (Jetski, [('C', 4)]);
-    (Jetski, [('D', 4)])
-  ]}
+let sd_empty = {board = gr_empty; ships = [Jetski]}
+let sd_miss_fst = {board = gr_miss_fst; ships = [Jetski]}
+let sd_hit_lst = {board = gr_hit_lst; ships = [Jetski]}
+let sd_miss_row = {board = gr_miss_row; ships = [Jetski]}
+let sd_hit_row = {board = gr_hit_row; ships = [Jetski; Cruiser]}
+
+let sd_mix = {board = gr_mix; ships = [Jetski; Cruiser]}
+
+let sd_hit_row_new = {board = gr_miss_hit_empty; ships = [Jetski; Cruiser]}
+
+let sd_mix_new = {board = gr_mix; ships = [Jetski; Cruiser]}
 
 (* =============================================================================
  * TEST - Display Gamestate
 ============================================================================= *)
 
-TEST = display_gamestate (sd_empty, sd_empty) pl1 = gr_empty_str
-TEST = display_gamestate (sd_empty, sd_empty) pl2 = gr_empty_str
-TEST = display_gamestate (sd_empty, sd_mix) pl1 = gr_empty_str
-TEST = display_gamestate (sd_empty, sd_mix) pl2 = gr_mix_str
-TEST = display_gamestate (sd_miss_fst, sd_hit_lst) pl1 = gr_miss_fst_str
-TEST = display_gamestate (sd_miss_fst, sd_hit_lst) pl2 = gr_hit_lst_str
-TEST = display_gamestate (sd_miss_row, sd_hit_row) pl2 = gr_hit_row_str
+TEST = display_gamestate (sd_empty, sd_empty) pl1 true = gr_empty_str
+TEST = display_gamestate (sd_empty, sd_empty) pl2 true = gr_empty_str
+TEST = display_gamestate (sd_empty, sd_mix) pl1 true = gr_empty_str
+TEST = display_gamestate (sd_empty, sd_mix) pl2 true = gr_mix_str
+TEST = display_gamestate (sd_miss_fst, sd_hit_lst) pl1 true = gr_miss_fst_str
+TEST = display_gamestate (sd_miss_fst, sd_hit_lst) pl2 true = gr_hit_lst_str
+TEST = display_gamestate (sd_miss_row, sd_hit_row) pl2 true = gr_hit_row_str
 
 (* =============================================================================
  * TEST - Victory Check
@@ -195,14 +176,14 @@ let c = (sd_empty, sd_empty)
 let (b,c) = turn c ('a',0) Player1
 
 TEST = b = Some Miss
-TEST = display_gamestate c pl2 = gr_miss_fst_str
-TEST = display_gamestate c pl1 = gr_empty_str
+TEST = display_gamestate c pl2 true = gr_miss_fst_str
+TEST = display_gamestate c pl1 true = gr_empty_str
 
 let (b,c) = turn c ('a', 0) Player1
 
 TEST = b = None
-TEST = display_gamestate c pl2 = gr_miss_fst_str
-TEST = display_gamestate c pl1 = gr_empty_str
+TEST = display_gamestate c pl2 true = gr_miss_fst_str
+TEST = display_gamestate c pl1 true = gr_empty_str
 
 let (b,c) = turn c ('a',1) Player1
 let (b,c) = turn c ('a',2) Player1
@@ -210,7 +191,6 @@ let (b,c) = turn c ('a',3) Player1
 
 
 TEST = b = Some Miss
-TEST = display_gamestate c pl2 = gr_miss_fst_row_str
-TEST = display_gamestate c pl1 = gr_empty_str
-
+TEST = display_gamestate c pl2 true = gr_miss_fst_row_str
+TEST = display_gamestate c pl1 true = gr_empty_str
 
