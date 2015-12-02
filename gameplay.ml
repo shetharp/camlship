@@ -181,8 +181,10 @@ let main () =
 
   (* Placing ships phase *)
   (* side1 places ships *)
+  print_endline "Player1, place your ships!";
   let side1 = place_ships init_side1 ships in
   (* side2 places ships *)
+  print_endline "Player1, place your ships!";
   let side2 = place_ships init_side2 ships in
 
   let gamestate = (side1, side2) in
