@@ -158,25 +158,24 @@ let sd_mix_new = {board = gr_mix; ships = [Jetski; Cruiser]}
  * TEST - Display Gamestate
 ============================================================================= *)
 
+TEST = display_gamestate (sd_empty, sd_empty) pl1 true false = gr_empty_str
+TEST = display_gamestate (sd_empty, sd_empty) pl2 true false = gr_empty_str
+TEST = display_gamestate (sd_empty, sd_mix) pl1 true false = gr_empty_str
+TEST = display_gamestate (sd_empty, sd_mix) pl2 true false = gr_mix_str
+TEST = display_gamestate (sd_miss_fst, sd_hit_lst) pl1 true false = gr_miss_fst_str
+TEST = display_gamestate (sd_miss_fst, sd_hit_lst) pl2 true false = gr_hit_lst_str
+TEST = display_gamestate (sd_miss_row, sd_hit_row) pl2 true false = gr_hit_row_str
 
-TEST = display_gamestate (sd_empty, sd_empty) pl1 true = gr_empty_str
-TEST = display_gamestate (sd_empty, sd_empty) pl2 true = gr_empty_str
-TEST = display_gamestate (sd_empty, sd_mix) pl1 true = gr_empty_str
-TEST = display_gamestate (sd_empty, sd_mix) pl2 true = gr_mix_str
-TEST = display_gamestate (sd_miss_fst, sd_hit_lst) pl1 true = gr_miss_fst_str
-TEST = display_gamestate (sd_miss_fst, sd_hit_lst) pl2 true = gr_hit_lst_str
-TEST = display_gamestate (sd_miss_row, sd_hit_row) pl2 true = gr_hit_row_str
-
-TEST = display_gamestate (sd_empty, sd_hit_lst) pl1 false
+TEST = display_gamestate (sd_empty, sd_hit_lst) pl1 false false
         = "----\n----\n----\n---X\n"
 
-TEST = display_gamestate (sd_empty, sd_mix) pl1 false
+TEST = display_gamestate (sd_empty, sd_mix) pl1 false false
         = "o---\n----\n-oX-\n---X\n"
 
-TEST = display_gamestate (sd_hit_lst, sd_empty) pl2 false
+TEST = display_gamestate (sd_hit_lst, sd_empty) pl2 false false
         = "----\n----\n----\n---X\n"
 
-TEST = display_gamestate (sd_mix, sd_empty) pl2 false
+TEST = display_gamestate (sd_mix, sd_empty) pl2 false false
         = "o---\n----\n-oX-\n---X\n"
 
 
@@ -200,14 +199,14 @@ let c = (sd_empty, sd_empty)
 let (b,c) = turn c ('a',0) Player1
 
 TEST = b = Some Miss
-TEST = display_gamestate c pl2 true = gr_miss_fst_str
-TEST = display_gamestate c pl1 true = gr_empty_str
+TEST = display_gamestate c pl2 true false = gr_miss_fst_str
+TEST = display_gamestate c pl1 true false = gr_empty_str
 
 let (b,c) = turn c ('a', 0) Player1
 
 TEST = b = None
-TEST = display_gamestate c pl2 true = gr_miss_fst_str
-TEST = display_gamestate c pl1 true = gr_empty_str
+TEST = display_gamestate c pl2 true false = gr_miss_fst_str
+TEST = display_gamestate c pl1 true false = gr_empty_str
 
 let (b,c) = turn c ('a',1) Player1
 let (b,c) = turn c ('a',2) Player1
@@ -215,8 +214,8 @@ let (b,c) = turn c ('a',3) Player1
 
 
 TEST = b = Some Miss
-TEST = display_gamestate c pl2 true = gr_miss_fst_row_str
-TEST = display_gamestate c pl1 true = gr_empty_str
+TEST = display_gamestate c pl2 true false = gr_miss_fst_row_str
+TEST = display_gamestate c pl1 true false = gr_empty_str
 
 let sd_empty_ship = {board = gr_empty_ship; ships = [Jetski; Cruiser]}
 
@@ -225,7 +224,7 @@ let (b,c) = turn c ('a',0) Player1
 
 TEST = b = Some Hit
 
-TEST = display_gamestate c pl2 true = "X###\n----\n####\n----\n"
+TEST = display_gamestate c pl2 true false = "X###\n----\n####\n----\n"
 
 let (b,c) = turn c ('a',1) Player1
 let (b,c) = turn c ('a',2) Player1
@@ -236,7 +235,10 @@ let (b,c) = turn c ('b',2) Player1
 let (b,c) = turn c ('b',3) Player1
 
 TEST = b = Some Miss
-(* TEST = display_gamestate c pl2 true = "XXXX\noooo\n####\n----\n" *)
+TEST = display_gamestate c pl2 true false = "XXXX\noooo\n####\n----\n"
+
+
+(*TEST = print_bytes (display_gamestate c pl2 true false); true*)
 
 
 (*gamestate line 229*)
