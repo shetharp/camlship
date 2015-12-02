@@ -49,8 +49,8 @@ let rec place_ships (side : side) (ships : ship list) : side =
   | [] -> side
   | ship::t ->
       print_newline ();
-      Printf.printf "Placing your %s. Enter a coordinate for the head of your ship\n
-        and a direction for the tail of your ship to point:  " (ship_string ship);
+      Printf.printf "Placing your %s. Enter a coordinate for the head of your ship
+and a direction for the tail of your ship to point:  " (ship_string ship);
       let (c,d) = translate (String.trim (read_line ())) in
       begin match c,d with
       | None,None ->
@@ -65,9 +65,13 @@ let rec place_ships (side : side) (ships : ship list) : side =
       | Some(c),Some(d) ->
           begin match place_ship side ship c d with
           | None ->
-              (print_endline "These coordinates are out of bounds. Try Again";
+              (print_endline "These coordinates are out of bounds
+or your ship overlaps with another. Try Again";
               place_ships side ships)
-          | Some(new_side) -> place_ships new_side t
+          | Some(new_side) ->
+              let gs_buffer = (new_side, {board = []; ships = []}) in
+              print_endline (display_gamestate gs_buffer Player1 true);
+              place_ships new_side t
           end
       end
 
@@ -77,8 +81,12 @@ let rec place_ships (side : side) (ships : ship list) : side =
 ----------------------------------------------------------------------------- *)
 
 let display_boards (gs : gamestate) (p : player) : gamestate =
-  let s = display_gamestate gs p in
-  print_endline s; gs
+  let opp = display_gamestate gs p false in
+  let own = display_gamestate gs p true in
+  print_endline "Opponent's board:";
+  print_endline opp;
+  print_endline "Your board:";
+  print_endline own; gs
 
 let try_move (gs : gamestate) (s: string) (p : player) : gamestate * bool=
   let c = String.get s 0 in
@@ -87,9 +95,13 @@ let try_move (gs : gamestate) (s: string) (p : player) : gamestate * bool=
     let i = int_of_char is in
     let (t, gnew) = turn gs (c,i) p in
     match t with
-    | Empty -> print_endline "[!] Invalid move. Try again"; (gs, false)
-    | Hit   -> print_endline "You hit a ship! Your turn again!"; (gnew, false)
-    | Miss  -> print_endline "You missed."; (gnew, true)
+    | None -> print_endline "[!] Invalid move. Try again"; (gs, false)
+    | Some v -> (
+      match v with
+      | Empty -> print_endline "[!] Invalid move. Try again"; (gs, false)
+      | Hit   -> print_endline "You hit a ship! Your turn again!"; (gnew, false)
+      | Miss  -> print_endline "You missed."; (gnew, true)
+    )
   with _ -> print_endline "[!] Invalid move. Try again."; (gs, false)
 
 
@@ -113,13 +125,13 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
   match v with
   | Some Player1 -> print_endline ("[!!] Congratulations! "^ps.first^" has won!")
   | Some Player2 -> print_endline ("[!!] Congratulations! "^ps.second^" has won!")
-  | None   -> begin
+  | None -> begin
     if (not continue)
     then (print_endline "The game has ended. Thanks for playing!";)
     else begin
       match ps.current with
       | Player1 -> (print_endline (ps.first^"'s turn. Make your move.");
-        print_string (display_gamestate gs Player1);
+        let _ = display_boards gs ps.current in
         let read = read_line () in
         let trimmed = String.trim read in
         let input = String.lowercase trimmed in
@@ -162,7 +174,13 @@ let generate_fleet () : fleet =
     else []
 
 let main () =
-  (* SHOULD ASK FOR PLAYER USERNAMES *)
+  (*TYPE IN DIRECTIONS*)
+
+  print_endline "Please enter player name."
+
+  let name = read_line () in
+
+  let ps = {first = name; second = "Computer"; current = Player1} in
 
   let (init_side1, init_side2) = initialize_gamestate () in
 
@@ -175,10 +193,8 @@ let main () =
   let side2 = place_ships init_side2 ships in
 
   let gamestate = (side1, side2) in
-  ignore(gamestate)
 
-  (* CALL REPL TO BEGIN ATTACK PHASE *)
-  (* call with tuple of players, true to start w player 1*)
+  repl gamestate ps true
 
 let _ = main()
 
