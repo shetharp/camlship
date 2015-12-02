@@ -70,7 +70,7 @@ or your ship overlaps with another. Try Again";
               place_ships side ships)
           | Some(new_side) ->
               let gs_buffer = (new_side, {board = []; ships = []}) in
-              print_endline (display_gamestate gs_buffer Player1 true);
+              print_endline (display_gamestate gs_buffer Player1 true true);
               place_ships new_side t
           end
       end
