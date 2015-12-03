@@ -106,6 +106,16 @@ let try_move (gs : gamestate) (s: string) (p : player) : gamestate * bool=
     )
   with _ -> print_endline "[!] Invalid move. Try again."; (gs, false)
 
+let ai_move (gs : gamestate) (c : coord) (p : player) : gamestate * bool =
+  let (t, gnew) = turn gs c p in
+  match t with
+  | None -> (gs, false)
+  | Some v -> (
+    match v with
+    | Empty -> (gs, false)
+    | Hit   -> print_endline "Computer hit a ship!."; (gnew, false)
+    | Miss  -> print_endline "Computer missed."; (gnew, true)
+  )
 
 (*returns updated gamestate and bool true if next player's turn*)
 let interp_input (gs : gamestate) (p : player) (instr : string)
@@ -146,9 +156,13 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
         repl newgs newps true
         )
       | Player2 -> (print_endline (ps.second^"'s turn. Make your move.\n");
-        let newcurp = Player1 in
+        let c = make_move (fst gs).board true in
+        let (newgs, switchPlayer) = ai_move gs c ps.current in
+        let newcurp = (if switchPlayer
+        then if ps.current = Player2 then Player1 else Player2
+        else ps.current) in
         let newps = {first = ps.first; second = ps.second; current = newcurp} in
-        repl gs newps true)
+        repl newgs newps true)
       end
   end
 (* -----------------------------------------------------------------------------
