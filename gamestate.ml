@@ -56,7 +56,7 @@ type gamestate = side * side
 
 
 (* -----------------------------------------------------------------------------
- * Game State Functions - Ship Length
+ * Game State Functions - Ship Length and String
 ----------------------------------------------------------------------------- *)
 
 (** Returns the length of a ship as an integer *)
@@ -68,6 +68,14 @@ let ship_length = function
  | Battleship -> 5
  | Carrier -> 6
 
+(* Converts a ship type to its string value *)
+let ship_string = function
+ | Jetski -> "Jetski"
+ | Patrol -> "Patrol"
+ | Cruiser -> "Cruiser"
+ | Submarine -> "Submarine"
+ | Battleship -> "Battleship"
+ | Carrier -> "Carrier"
 
 (* -----------------------------------------------------------------------------
  * Game State Functions - Turn

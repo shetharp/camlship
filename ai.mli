@@ -1,7 +1,7 @@
 open Gamestate
 
 (* Intitializes the grid with randomly placed ships that do not touch. *)
-val ai_place_ships: unit -> grid * fleet
+val ai_place_ships: side -> fleet -> side
 
 (* Returns the best tile to hit.
  *    - If it knows of a hit on the grid that is not a sunken ship then
