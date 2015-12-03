@@ -5,14 +5,7 @@ open Str
 (* -----------------------------------------------------------------------------
  * PLACING SHIPS PHASE
 ----------------------------------------------------------------------------- *)
-let ship_string = function
- | Jetski -> "Jetski"
- | Patrol -> "Patrol"
- | Cruiser -> "Cruiser"
- | Submarine -> "Submarine"
- | Battleship -> "Battleship"
- | Carrier -> "Carrier"
-
+(* Converts a string to a direction option or None if not a valid direction *)
 let dir_of_string (s : string) : dir option =
   if s = "DOWN" then Some(Down)
   else if s = "UP" then Some(Up)
@@ -20,7 +13,11 @@ let dir_of_string (s : string) : dir option =
   else if s = "RIGHT" then Some(Right)
   else None
 
-(* Returns an uppercase character and a number as a coord option and a direction option *)
+(* Returns: an uppercase character and a number as a coord option
+ *  and a direction option. Return one or both of them as None if
+ *  they are not valid coordinates or directions.
+ * Pre: None
+*)
 let translate (instr : string) : coord option * dir option =
   let words = List.map (String.trim)
                 (Str.bounded_split (Str.regexp " ") instr 2) in
@@ -44,7 +41,11 @@ let translate (instr : string) : coord option * dir option =
       let d_option = dir_of_string (String.uppercase d) in
       (c_option, d_option)
 
-let rec place_ships (side : side) (ships : ship list) : side =
+(* Returns: a side with the ships from ship list placed on the board and the
+ *  fleet updated to include the ships
+ * Pre: None
+*)
+let rec place_ships (side : side) (ships : fleet) : side =
   match ships with
   | [] -> side
   | ship::t ->
@@ -100,7 +101,7 @@ let try_move (gs : gamestate) (s: string) (p : player) : gamestate * bool=
       match v with
       | Empty -> (print_endline "[!] You've already tried that spot. Try again";
         (gs, false))
-      | Hit   -> print_endline "You hit a ship! Your turn again!"; (gnew, false)
+      | Hit   -> print_endline "You hit a ship!"; (gnew, false)
       | Miss  -> print_endline "You missed."; (gnew, true)
     )
   with _ -> print_endline "[!] Invalid move. Try again."; (gs, false)
@@ -131,7 +132,7 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
     then (print_endline "The game has ended. Thanks for playing!";)
     else begin
       match ps.current with
-      | Player1 -> (print_endline (ps.first^"'s turn. Make your move.");
+      | Player1 -> (print_endline (ps.first^"'s turn. Make your move.\n");
         let _ = display_boards gs ps.current in
         let read = read_line () in
         let trimmed = String.trim read in
@@ -144,7 +145,7 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
         let newps = {first = ps.first; second = ps.second; current = newcurp} in
         repl newgs newps true
         )
-      | Player2 -> (print_endline (ps.second^"'s turn. Make your move.");
+      | Player2 -> (print_endline (ps.second^"'s turn. Make your move.\n");
         let newcurp = Player1 in
         let newps = {first = ps.first; second = ps.second; current = newcurp} in
         repl gs newps true)
@@ -191,11 +192,11 @@ let main () =
 
   (* Placing ships phase *)
   (* side1 places ships *)
-  Printf.printf "%s, place your ships!" ps.first;
+  Printf.printf "%s, place your ships!\n" ps.first;
   let side1 = place_ships init_side1 ships in
   (* side2 places ships *)
-  Printf.printf "%s, place your ships!" ps.second;
-  let side2 = place_ships init_side2 ships in
+  Printf.printf "%s, place your ships!\n" ps.second;
+  let side2 = ai_place_ships init_side2 ships in
 
   let gamestate = (side1, side2) in
 

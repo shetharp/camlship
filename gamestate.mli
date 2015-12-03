@@ -43,14 +43,17 @@ type gamestate = side * side
 
 val ship_length : ship -> int
 
+val ship_string : ship -> string
+
 (* Returns a new grid with the tilestate updated at that coord and that
  * new tilestate passed back in the tuple as an option. If coord is out of range
  * or already played, then return None for the tilestate option and return the
  * original grid. *)
 val turn : gamestate -> coord -> player -> (tilestate option * gamestate)
 
-(* Returns true if there are no ships remaining on the board that have
- * not been destroyed.
+(* Returns Some [the player that won] if there are no ships remaining on
+ * the board that have not been destroyed signaling the end of the game,
+ * None if the game has not been won yet
  * Precondition: Each side in the gamestate contains a grid that is not empty*)
 val victory : gamestate -> player option
 

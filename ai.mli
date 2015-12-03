@@ -1,7 +1,7 @@
 open Gamestate
 
 (* Intitializes the grid with randomly placed ships that do not touch. *)
-val ai_place_ships: unit -> grid * fleet
+val ai_place_ships: side -> fleet -> side
 
 (*We'll want to also have it take in a last move*)
 

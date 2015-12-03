@@ -56,7 +56,7 @@ type gamestate = side * side
 
 
 (* -----------------------------------------------------------------------------
- * Game State Functions - Ship Length
+ * Game State Functions - Ship Length and String
 ----------------------------------------------------------------------------- *)
 
 (** Returns the length of a ship as an integer *)
@@ -68,6 +68,14 @@ let ship_length = function
  | Battleship -> 5
  | Carrier -> 6
 
+(* Converts a ship type to its string value *)
+let ship_string = function
+ | Jetski -> "Jetski"
+ | Patrol -> "Patrol"
+ | Cruiser -> "Cruiser"
+ | Submarine -> "Submarine"
+ | Battleship -> "Battleship"
+ | Carrier -> "Carrier"
 
 (* -----------------------------------------------------------------------------
  * Game State Functions - Turn
@@ -134,6 +142,10 @@ let turn gstate crd plyr : (tilestate option * gamestate) =
  * Game State Functions - Place Ship
 ----------------------------------------------------------------------------- *)
 
+(* Returns: true if the ship at the current coordinate and direction would
+ *  be out of bounds on the board
+ * Pre: None
+*)
 let out_of_bounds ((letter,number) : coord) (d : dir) (s : ship) : bool =
   let hrow = (Char.code letter) - 65 in
   let hcol = number in
@@ -154,6 +166,9 @@ let out_of_bounds ((letter,number) : coord) (d : dir) (s : ship) : bool =
      then true
   else false
 
+(* Returns: true if there already exists a ship at the coordinate
+ * Pre: The coordinate is within range
+*)
 let overlap (g : grid) (crd : coord) : bool =
   let rowNum = (Char.code (fst crd)) - 65 in
   let colNum = snd crd in
@@ -176,6 +191,7 @@ let overlap (g : grid) (crd : coord) : bool =
   in
   find g 0
 
+(* Replace the tiles on the grid with ship parts *)
 let rec replace_tiles (g : grid) (ship : ship) (c : coord)
                         (d : dir) (i : int) : grid option =
   if i = 0 then Some(g)
@@ -199,7 +215,6 @@ let rec replace_tiles (g : grid) (ship : ship) (c : coord)
       or None if the coordinates were out of bounds or overlapping
       with another ship.
     Pre: Takes in a coordinate and direction.
- * TODO: Implementation spec/comments
 *)
 let place_ship (sid : side) (ship : ship)
                   (c : coord) (d : dir) : side option =
@@ -293,9 +308,10 @@ let display_gamestate gstate plyr own formatted =
  * Game State Functions - Victory
 ----------------------------------------------------------------------------- *)
 
-(** Returns: TODO
- * TODO: Implementation spec/comments
-*)
+(* Returns Some [the player that won] if there are no ships remaining on
+ * the board that have not been destroyed signaling the end of the game,
+ * None if the game has not been won yet
+ * Precondition: Each side in the gamestate contains a grid that is not empty*)
 let victory (gs : gamestate) : player option =
   let unhit_in_row rw : int =
     List.fold_left (fun acc r ->

@@ -6,7 +6,7 @@ open Gamestate
 val repl : gamestate -> playerstate -> bool -> unit
 
 (** Prompts player to place all ships and returns the updated gamestate. *)
-val place_ships: side -> ship list -> side
+val place_ships: side -> fleet -> side
 
 val interp_input: gamestate -> player -> string -> gamestate * bool
 
