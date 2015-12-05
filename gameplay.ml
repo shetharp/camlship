@@ -2,6 +2,16 @@ open Gamestate
 open Ai
 open Str
 
+
+let help () =
+  print_endline "To play Battleship, enter a coordinate to attack on
+your opponent's board when it is your turn. Moves can be made in the form A0,
+with a letter followed by a number, corresponding to the rows and columns of
+the board.";
+  print_endline "Enter SHOW or BOARD to see your game so far.";
+  print_endline "Enter HELP for these instructions again.";
+  print_endline "Enter QUIT if you wish to exit the game.";
+  print_endline "Good luck!"; ()
 (* -----------------------------------------------------------------------------
  * PLACING SHIPS PHASE
 ----------------------------------------------------------------------------- *)
@@ -128,6 +138,7 @@ let interp_input (gs : gamestate) (p : player) (instr : string)
     match hd with
     | "show"  -> ((display_boards gs p), false)
     | "board" -> ((display_boards gs p), false)
+    | "help"  -> help (); (gs, false)
     | _       -> (try_move gs hd p)
   )
   | _ -> print_endline "[!] Invalid command. Try again"; (gs, false)
@@ -192,7 +203,7 @@ let generate_fleet () : fleet =
     else []
 
 let main () =
-  (*TYPE IN DIRECTIONS*)
+  print_endline "Welcome to BATTLESHIP!";
 
   print_endline "Please enter player name.";
 
@@ -209,10 +220,12 @@ let main () =
   Printf.printf "%s, place your ships!\n" ps.first;
   let side1 = place_ships init_side1 ships in
   (* side2 places ships *)
-  Printf.printf "%s, place your ships!\n" ps.second;
+  Printf.printf "%s is placing ships!" ps.second;
   let side2 = ai_place_ships init_side2 ships in
 
   let gamestate = (side1, side2) in
+
+  help ();
 
   repl gamestate ps true
 
