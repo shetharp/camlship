@@ -178,7 +178,7 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool) (easy : bool)
         )
       | Player2 -> (print_endline (ps.second^" is making move.");
         print_newline();
-        let c = make_move (fst gs).board easyai in
+        let c = make_move (fst gs).board easy in
         let (newgs, switchPlayer) = ai_move gs c ps.current in
         let newcurp = (if switchPlayer
         then if ps.current = Player2 then Player1 else Player2
@@ -230,16 +230,18 @@ let main () =
 
   let name = read_line () in
   print_newline ();
+
+  print_endline "Would you like to play against a hard computer or an easy computer?
+Enter EASY for an easy game or HARD for a hard game.";
+  let line = read_line () in
+  let easyai = ai_type_parse line in
+
   let ps = {first = name; second = "Computer"; current = Player1} in
 
   let (init_side1, init_side2) = initialize_gamestate () in
 
   let ships = generate_fleet () in
 
-  print_endline "Would you like to play against a hard computer or an easy computer?
-Enter EASY for an easy game or HARD for a hard game."
-  let line = read_line () in
-  let easyai = ai_type_parse line in
   (* Placing ships phase *)
   (* side1 places ships *)
   print_endline (ps.first^", place your ships!");
