@@ -1,6 +1,6 @@
 open Gamestate
 
-(* Mutable record to store information to make best next move.*)
+(* Mutable record to store information to determine the best next move.*)
 type best_move_data = {
   mutable first_hit : coord option;
   mutable next_moves : coord list;
@@ -85,7 +85,8 @@ let rec ai_place_ships (side : side) (ships : fleet) : side =
         end
 
 
-(* Always gives a valid coordinate (in bounds and not already played) *)
+(* Returns a random coordinate, that is valid: i.e. in bounds and not already
+ * played. *)
 let rand_move (g:grid): coord =
   let len = grid_size in
   let rec get_valid_coord (): coord =
@@ -98,8 +99,6 @@ let rand_move (g:grid): coord =
   in
   get_valid_coord ()
 
-let bmdata = { first_hit = None; next_moves = []; last_move = None }
-
 let is_valid_move (g:grid) (c:coord) =
   try
     let (_,ts) = get_tile g c in
@@ -107,6 +106,10 @@ let is_valid_move (g:grid) (c:coord) =
   with
     | _ -> false
 
+let bmdata = { first_hit = None; next_moves = []; last_move = None }
+
+(* Sets the bmdata.next_moves field to valid tiles neighboring the given coord.
+ *)
 let gen_next_moves (g:grid) (c:coord) : unit =
   let uptile = (Char.chr (Char.code (fst c) - 1), snd c) in
   let downtile = (Char.chr (Char.code (fst c) + 1), snd c) in
@@ -121,8 +124,8 @@ let gen_next_moves (g:grid) (c:coord) : unit =
                     (fun x y -> if Random.bool () then 1 else -1) moves in
   bmdata.next_moves <- random_moves
 
-(* Updates bmdata - eventually: randomize the way tiles are added in, add logic
-   that removes tiles in the wrong direction *)
+(* Updates bmdata's fields based on the previous moves and whether they were
+ * hits or misses. *)
 let update_bmdata g : unit =
   match bmdata.last_move with
   | None -> ()
@@ -165,8 +168,7 @@ let update_bmdata g : unit =
 (* Returns the best tile to hit.
  *    - If it knows of a hit on the grid that is not a sunken ship then
  *      it will choose a spot adjacent to that hit
- *    - If there are no known hits then it will randomly choose a spot
- *      at least two tiles away - implement this part??? *)
+ *    - If there are no known hits then it will randomly choose a spot*)
 let best_move (g: grid): coord =
   if bmdata.last_move = None then (* First move of the game*)
     let c = rand_move g in
@@ -183,7 +185,8 @@ let best_move (g: grid): coord =
               bmdata.next_moves <- t;
               h
 
-(*Needs to take in last move*)
+(* If easy is true, then AI plays randomly. If easy is false, AI uses our
+ * designed algorithm. *)
 let make_move (g:grid) (easy:bool): coord =
   if easy then rand_move g
   else best_move g
