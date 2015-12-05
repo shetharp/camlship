@@ -9,16 +9,6 @@ open Gamestate
   Unless otherwise noted, test cases operate by default on a 4x4 grid.
 *)
 
-(*
-let is_error v : bool =
-  match v with
-  | GameCrash _ -> true
-  | _ -> false
-*)
-
-
-
-
 (* =============================================================================
  * Reusable Variables
 ============================================================================= *)
@@ -237,8 +227,3 @@ let (b,c) = turn c ('b',3) Player1
 TEST = b = Some Miss
 TEST = display_gamestate c pl2 true false = "XXXX\noooo\n####\n----\n"
 
-
-(*TEST = print_bytes (display_gamestate c pl2 true false); true*)
-
-
-(*gamestate line 229*)

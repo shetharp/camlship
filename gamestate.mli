@@ -1,4 +1,5 @@
-(* Size of the grid. So if GRID_SIZE is 8 then the grid is 8 by 8 tiles *)
+(* Size of the grid. So if grid_size is 8 then the grid is 8 by 8 tiles
+ * Must be between 4 and 10 inclusive.*)
 val grid_size : int
 
 (* Variant of possible ship types *)
@@ -23,30 +24,38 @@ type grid = (terrain * tilestate) list list
 
 (* Coordinates of tiles. A character represents a row where 'A' is the top row,
  * B is the next row down, and so on. The integer represents the column where
- * 1 is the leftmost, 2 is the next column, and so on*)
+ * 0 is the leftmost, 2 is the next column, and so on*)
 type coord = char * int
 
-(* List of ships along with their type and the number of remaining unhit
- * pieces that that ship. *)
+(* List of ship types that have been placed on the board. Generated dynamically
+ * based on size of the grid*)
 type fleet = ship list
 
 (* Directions that the ship can placed*)
 type dir = Up | Down | Left | Right
 
+(* Player1 is the human player. Player2 is the AI.*)
 type player = Player1 | Player2
 
+(* Record storing information about the current player state.
+ * first is the first player's name. second is the second's player name.
+ * current is the active player who is making the move.*)
 type playerstate = {first : string; second : string; current : player}
 
+(* A player's ship and board information. *)
 type side = {board : grid; ships : fleet}
 
+(* Represents the entire board (both human and AI's sides)*)
 type gamestate = side * side
 
+(* Given a ship type, returns the number of tiles that it takes up.*)
 val ship_length : ship -> int
 
+(* Give a ship type, returns the ship's name. *)
 val ship_string : ship -> string
 
-(* Returns the (terrain * tilestate) pair at the given coord. The coord must be
- * valid.
+(* Returns the (terrain * tilestate) pair at the given coord.
+ * Precondition: The coord must be valid.
  *)
 val get_tile : grid -> coord -> (terrain * tilestate)
 
@@ -62,10 +71,11 @@ val turn : gamestate -> coord -> player -> (tilestate option * gamestate)
  * Precondition: Each side in the gamestate contains a grid that is not empty*)
 val victory : gamestate -> player option
 
-(* Prints out the grid while clearly displaying
- * the terrain and action for each tile
- * Prints out the grid displaying only the action associated with each tile
- * and not showing the terrain **)
+(* Returns a string representing the current gamestate. The function takes in a
+ * player and a boolean to decide if its own board should be displayed
+ * (showing ship placement) or if the opponent's board should be displayed
+ * (showing only the action and not terrain). The final bool input is used for
+ * debugging and testing purposes. **)
 val display_gamestate: gamestate -> player -> bool -> bool -> string
 
 (* Places the ship on the grid starting at the coord given and in the

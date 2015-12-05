@@ -1,9 +1,7 @@
 open Gamestate
 
-(* Intitializes the grid with randomly placed ships that do not touch. *)
+(* Intitializes the grid with a strategic placement of ships.*)
 val ai_place_ships: side -> fleet -> side
-
-(*We'll want to also have it take in a last move*)
 
 (* If on easy mode, returns a random coordinate. If not on easy mode, returns
  * the best coordinate (based on previous hits/misses).
