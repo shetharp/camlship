@@ -92,23 +92,23 @@ let rand_move (g:grid): coord =
 
 let bmdata = { first_hit = None; next_moves = []; last_move = None }
 
+let is_valid_move (g:grid) (c:coord) =
+  try
+    let (_,ts) = get_tile g c in
+    ts = Empty
+  with
+    | _ -> false
+
 let gen_next_moves (g:grid) (c:coord) : unit =
-  let is_valid_move c =
-    try
-      let (_,ts) = get_tile g c in
-      ts = Empty
-    with
-      | _ -> false
-  in
   let uptile = (Char.chr (Char.code (fst c) - 1), snd c) in
   let downtile = (Char.chr (Char.code (fst c) + 1), snd c) in
   let lefttile = (fst c, (snd c) - 1) in
   let righttile = (fst c, (snd c) + 1) in
   let moves =
-    (if (is_valid_move uptile) then [uptile] else []) @
-    (if (is_valid_move downtile) then [downtile] else []) @
-    (if (is_valid_move lefttile) then [lefttile] else []) @
-    (if (is_valid_move righttile) then [righttile] else []) in
+    (if (is_valid_move g uptile) then [uptile] else []) @
+    (if (is_valid_move g downtile) then [downtile] else []) @
+    (if (is_valid_move g lefttile) then [lefttile] else []) @
+    (if (is_valid_move g righttile) then [righttile] else []) in
   let random_moves = List.sort
                     (fun x y -> if Random.bool () then 1 else -1) moves in
   bmdata.next_moves <- random_moves
@@ -126,19 +126,29 @@ let update_bmdata g : unit =
                     gen_next_moves g c
           | Some i -> if (fst i = fst c) (* rows same*)
                       then bmdata.next_moves <-
+                        let nextc =
+                          if ((snd c) > (snd i))
+                          then (fst c, (snd c) + 1)
+                          else (fst c, (snd c) - 1)
+                        in
                         (
-                        if ((snd c) > (snd i))
-                        then (fst c, (snd c) + 1)
-                        else (fst c, (snd c) - 1)
-                        )::
+                          if is_valid_move g nextc
+                          then [nextc]
+                          else []
+                        )@
                         (List.filter (fun (x,_) -> x = (fst i)) bmdata.next_moves)
                       else (*cols same*)
                         bmdata.next_moves <-
+                        let nextc =
+                          if ((Char.code (fst c)) > (Char.code (fst i)))
+                          then (Char.chr (Char.code(fst c) + 1), snd c)
+                          else (Char.chr (Char.code(fst c) - 1), snd c)
+                        in
                         (
-                        if ((Char.code (fst c)) > (Char.code (fst i)))
-                        then (Char.chr (Char.code(fst c) + 1), snd c)
-                        else (Char.chr (Char.code(fst c) - 1), snd c)
-                        )::
+                          if is_valid_move g nextc
+                          then [nextc]
+                          else []
+                        )@
                         (List.filter (fun (_,y) -> y = (snd i)) bmdata.next_moves)
           end
       | _ -> ()
