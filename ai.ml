@@ -82,10 +82,14 @@ let rec ai_place_ships (side : side) (ships : fleet) : side =
 
 (* Always gives a valid coordinate (in bounds and not already played) *)
 let rand_move (g:grid): coord =
-  let len = List.length g in
+  let len = grid_size in
   let rec get_valid_coord (): coord =
     let x = Random.int len in
     let y = Random.int len in
+    print_int len;
+    print_int x;
+    print_int y;
+    print_endline "";
     let (_,ts) = List.nth (List.nth g y) x in
     if ts = Empty
     then (Char.chr ((Char.code 'A') + y), x)
@@ -127,7 +131,26 @@ let update_bmdata g : unit =
           begin match bmdata.first_hit with
           | None -> bmdata.first_hit <- Some c;
                     gen_next_moves g c
-          | Some _ -> () (*Add logic here to remove tiles in wrong direction*)
+          | Some i -> if (fst i = fst c) (* rows same*)
+                      then bmdata.next_moves <-
+                        (
+                        if ((snd c) - (snd i) > 0)
+                        then (fst c, (snd c) + 1)
+                        else (fst c, (snd c) - 1)
+                        )::
+                        (List.filter (fun (x,_) -> x = fst i) bmdata.next_moves)
+                      else (*cols same*)
+                        bmdata.next_moves <-
+                        (
+                        if ((Char.code (fst c)) - (Char.code (fst i)) > 0)
+                        then (Char.chr (Char.code(fst c) + 1), snd c)
+                        else (Char.chr (Char.code(fst c) - 1), snd c)
+                        )::
+                        (List.filter (fun (_,y) -> (y = snd i)) bmdata.next_moves)
+
+
+
+          () (*Add logic here to remove tiles in wrong direction*)
           end
       | _ -> ()
       end
