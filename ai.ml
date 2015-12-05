@@ -83,9 +83,11 @@ let rec ai_place_ships (side : side) (ships : fleet) : side =
 (* Always gives a valid coordinate (in bounds and not already played) *)
 let rand_move (g:grid): coord =
   let len = List.length g in
+  Printf.printf "rand_move: len = %d\n" len;
   let rec get_valid_coord (): coord =
     let x = Random.int len in
     let y = Random.int len in
+    Printf.printf "rand_move: (x,y) = (%d,%d)\n" x y;
     let (_,ts) = List.nth (List.nth g y) x in
     if ts = Empty
     then (Char.chr ((Char.code 'A') + y), x)
