@@ -22,13 +22,12 @@ let rec ai_place_ships (side : side) (ships : fleet) : side =
   match ships with
   | [] -> side
   | ship::t ->
-      Printf.printf "Computer placing %s\n" (ship_string ship);
       let (c,d) = (random_coord (), random_dir ()) in
       begin match place_ship side ship c d with
       | None -> ai_place_ships side ships
       | Some(new_side) ->
           let gs_buffer = (new_side, {board = []; ships = []}) in
-          print_endline (display_gamestate gs_buffer Player2 true true);
+          print_string (display_gamestate gs_buffer Player2 true true);
           ai_place_ships new_side t
       end
 
