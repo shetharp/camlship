@@ -73,10 +73,7 @@ let rec ai_place_ships (side : side) (ships : fleet) : side =
       | Some(new_side) ->
           if adjacent_ship (side.board) c d (ship_length ship)
           then ai_place_ships side ships
-          else
-            let gs_buffer = (new_side, {board = []; ships = []}) in
-            print_string (display_gamestate gs_buffer Player2 true true);
-            ai_place_ships new_side t
+          else ai_place_ships new_side t
         end
 
 
@@ -86,10 +83,6 @@ let rand_move (g:grid): coord =
   let rec get_valid_coord (): coord =
     let x = Random.int len in
     let y = Random.int len in
-    print_int len;
-    print_int x;
-    print_int y;
-    print_endline "";
     let (_,ts) = List.nth (List.nth g y) x in
     if ts = Empty
     then (Char.chr ((Char.code 'A') + y), x)
