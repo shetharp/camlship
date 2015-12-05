@@ -3,10 +3,10 @@ open Ai
 open Str
 
 let help () =
-  print_endline "To play Battleship, enter a coordinate to attack on
-your opponent's board when it is your turn. Moves can be made in the form A0,
-with a letter followed by a number, corresponding to the rows and columns of
-the board.";
+  print_endline
+"To play Battleship, enter a coordinate to attack on your opponent's board
+when it is your turn. Moves can be made in the form A0, with a letter followed
+by a number, corresponding to the rows and columns of the board.";
   print_endline "If a player hits a ship, then it is that player's turn again.
 Otherwise, it is the other player's turn.";
   print_endline "Enter SHOW or BOARD to see your board.";
@@ -14,6 +14,9 @@ Otherwise, it is the other player's turn.";
   print_endline "Enter QUIT if you wish to exit the game.";
   print_endline "Good luck!";
   print_newline ()
+
+let co_to_string (c:coord):string =
+  (String.make 1 (fst c)) ^ (string_of_int (snd c))
 (* -----------------------------------------------------------------------------
  * PLACING SHIPS PHASE
 ----------------------------------------------------------------------------- *)
@@ -186,7 +189,8 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool) (easy : bool)
         let newps = {first = ps.first; second = ps.second; current = newcurp} in
         repl newgs newps true easy
         )
-      | Player2 -> (print_endline (ps.second^" is making move.");
+      | Player2 -> (let c = make_move (fst gs).board false in
+        (print_endline (ps.second^" selected "^(co_to_string c)^"."));
         print_newline();
         let c = make_move (fst gs).board easy in
         let (newgs, switchPlayer) = ai_move gs c ps.current in
