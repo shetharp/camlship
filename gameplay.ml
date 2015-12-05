@@ -220,7 +220,7 @@ let main () =
   Printf.printf "%s, place your ships!\n" ps.first;
   let side1 = place_ships init_side1 ships in
   (* side2 places ships *)
-  Printf.printf "%s is placing ships!" ps.second;
+  Printf.printf "%s is placing ships!\n" ps.second;
   let side2 = ai_place_ships init_side2 ships in
 
   let gamestate = (side1, side2) in

@@ -159,10 +159,10 @@ let out_of_bounds ((letter,number) : coord) (d : dir) (s : ship) : bool =
     | Left -> hcol - (ship_length s) + 1
     | Right -> hcol + (ship_length s) - 1
     | _ -> hcol in
-  if (hrow > grid_size || hrow < 0) ||
-     (hcol > grid_size || hcol < 0) ||
-     (trow > grid_size || trow < 0) ||
-     (tcol > grid_size || tcol < 0)
+  if (hrow >= grid_size || hrow < 0) ||
+     (hcol >= grid_size || hcol < 0) ||
+     (trow >= grid_size || trow < 0) ||
+     (tcol >= grid_size || tcol < 0)
      then true
   else false
 
