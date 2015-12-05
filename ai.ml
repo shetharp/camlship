@@ -23,7 +23,7 @@ let in_grid (row, col) : bool =
 
 let make_coord (row, col) : coord = (Char.chr (65 + row), col)
 
-let look_around g c d : bool =
+let look_around g c : bool =
   let row = (Char.code (fst c)) - 65 in
   let col = snd c in
   let adj1 = ((row - 1), col) in
@@ -31,13 +31,13 @@ let look_around g c d : bool =
   let adj3 = (row, (col - 1)) in
   let adj4 = (row, (col + 1)) in
   let tile1 =
-    if in_grid adj1 then fst (get_tile g (make_coord adj1) d) else Water in
+    if in_grid adj1 then fst (get_tile g (make_coord adj1)) else Water in
   let tile2 =
-    if in_grid adj2 then fst (get_tile g (make_coord adj2) d) else Water in
+    if in_grid adj2 then fst (get_tile g (make_coord adj2)) else Water in
   let tile3 =
-    if in_grid adj3 then fst (get_tile g (make_coord adj3) d) else Water in
+    if in_grid adj3 then fst (get_tile g (make_coord adj3)) else Water in
   let tile4 =
-    if in_grid adj4 then fst (get_tile g (make_coord adj4) d) else Water in
+    if in_grid adj4 then fst (get_tile g (make_coord adj4)) else Water in
   match tile1, tile2, tile3, tile4 with
   | ShipPart(_),_,_,_ -> true
   | _,ShipPart(_),_,_ -> true
