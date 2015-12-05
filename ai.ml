@@ -6,6 +6,7 @@ type best_move_data = {
   mutable next_moves : coord list;
   mutable last_move : coord option}
 
+(* A random direction value *)
 let random_dir () : dir =
   let i = Random.int 4 in
   if i = 0 then Up
@@ -14,7 +15,7 @@ let random_dir () : dir =
   else if i = 3 then Left
   else failwith "random failure"
 
-(* Randomly returns a coordinate *)
+(* A random coordinate *)
 let random_coord () : coord =
   (Char.chr (Random.int grid_size + 65), Random.int grid_size)
 
