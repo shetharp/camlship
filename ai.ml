@@ -127,23 +127,19 @@ let update_bmdata g : unit =
           | Some i -> if (fst i = fst c) (* rows same*)
                       then bmdata.next_moves <-
                         (
-                        if ((snd c) - (snd i) > 0)
+                        if ((snd c) > (snd i))
                         then (fst c, (snd c) + 1)
                         else (fst c, (snd c) - 1)
                         )::
-                        (List.filter (fun (x,_) -> x = fst i) bmdata.next_moves)
+                        (List.filter (fun (x,_) -> x = (fst i)) bmdata.next_moves)
                       else (*cols same*)
                         bmdata.next_moves <-
                         (
-                        if ((Char.code (fst c)) - (Char.code (fst i)) > 0)
+                        if ((Char.code (fst c)) > (Char.code (fst i)))
                         then (Char.chr (Char.code(fst c) + 1), snd c)
                         else (Char.chr (Char.code(fst c) - 1), snd c)
                         )::
-                        (List.filter (fun (_,y) -> (y = snd i)) bmdata.next_moves)
-
-
-
-          () (*Add logic here to remove tiles in wrong direction*)
+                        (List.filter (fun (_,y) -> y = (snd i)) bmdata.next_moves)
           end
       | _ -> ()
       end
