@@ -32,7 +32,7 @@ let rec ai_place_ships (side : side) (ships : fleet) : side =
       end
 
 
-(* Always gives a valid coordinate (in bounds and ) *)
+(* Always gives a valid coordinate (in bounds and not already played) *)
 let rand_move (g:grid): coord =
   let len = List.length g in
   let rec get_valid_coord (): coord =
@@ -64,7 +64,9 @@ let gen_next_moves (g:grid) (c:coord) : unit =
     (if (is_valid_move downtile) then [downtile] else []) @
     (if (is_valid_move lefttile) then [lefttile] else []) @
     (if (is_valid_move righttile) then [righttile] else []) in
-  bmdata.next_moves <- moves
+  let random_moves = List.sort
+                    (fun x y -> if Random.bool () then 1 else -1) moves in
+  bmdata.next_moves <- random_moves
 
 (* Updates bmdata - eventually: randomize the way tiles are added in, add logic
    that removes tiles in the wrong direction *)
@@ -95,7 +97,8 @@ let best_move (g: grid): coord =
   else
     let _ = update_bmdata g in
     match bmdata.next_moves with
-    | []   -> let c = rand_move g in
+    | []   -> bmdata.first_hit <- None;
+              let c = rand_move g in
               bmdata.last_move <- Some c;
               c
     | h::t -> bmdata.last_move <- Some h;
