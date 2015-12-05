@@ -11,9 +11,16 @@ the board.";
 Otherwise, it is the other player's turn.";
   print_endline "Enter SHOW or BOARD to see your board.";
   print_endline "Enter HELP for these instructions again.";
+  print_endline "Enter LEGEND to see what each tile on the board means.";
   print_endline "Enter QUIT if you wish to exit the game.";
   print_endline "Good luck!";
   print_newline ()
+
+let display_legend () =
+  print_endline "Water: -";
+  print_endline "Hit: X";
+  print_endline "Miss: o";
+  print_endline "Ship: #"; ()
 (* -----------------------------------------------------------------------------
  * PLACING SHIPS PHASE
 ----------------------------------------------------------------------------- *)
@@ -147,6 +154,7 @@ let interp_input (gs : gamestate) (p : player) (instr : string)
     | "show"  -> ((display_boards gs p), false)
     | "board" -> ((display_boards gs p), false)
     | "help"  -> help (); (gs, false)
+    | "legend"-> display_legend (); (gs, false)
     | _       -> (try_move gs hd p)
   )
   | _ -> print_endline "[!] Invalid command. Try again"; (gs, false)
