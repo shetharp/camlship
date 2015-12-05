@@ -14,15 +14,19 @@ let random_dir () : dir =
   else if i = 3 then Left
   else failwith "random failure"
 
+(* Randomly returns a coordinate *)
 let random_coord () : coord =
   (Char.chr (Random.int grid_size + 65), Random.int grid_size)
 
+(* Are these row and col values within the grid *)
 let in_grid (row, col) : bool =
   if (row < 0 || row >= grid_size) || (col < 0 || col >= grid_size)
   then false else true
 
 let make_coord (row, col) : coord = (Char.chr (65 + row), col)
 
+(* Checks the four adjacent tiles for ships, and returns true if that
+ * is the case *)
 let look_around g c : bool =
   let row = (Char.code (fst c)) - 65 in
   let col = snd c in
@@ -45,6 +49,8 @@ let look_around g c : bool =
   | _,_,_,ShipPart(_) -> true
   | _,_,_,_           -> false
 
+(* Returns true if there is a ship adjacent to one of the spots in the
+ * possible ship placement *)
 let rec adjacent_ship (g : grid) (c : coord) (d : dir) (i : int) : bool =
   if i = 0 then false
   else
