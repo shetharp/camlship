@@ -10,7 +10,7 @@
 
 (*TODO: All caps version of 'grid_size' is unacceptable for compiler.
 Fix it in the gamestate.mli. Potentially unnecessary--get rid of it entirely? *)
-let grid_size = 4
+let grid_size = 10
 
 
 

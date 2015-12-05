@@ -71,7 +71,8 @@ let rec ai_place_ships (side : side) (ships : fleet) : side =
       begin match place_ship side ship c d with
       | None -> ai_place_ships side ships
       | Some(new_side) ->
-          if adjacent_ship (side.board) c d (ship_length ship)
+          let rand = Random.bool () in
+          if (adjacent_ship (side.board) c d (ship_length ship) && rand)
           then ai_place_ships side ships
           else ai_place_ships new_side t
         end
