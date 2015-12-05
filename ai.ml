@@ -23,7 +23,7 @@ let in_grid (row, col) : bool =
 
 let make_coord (row, col) : coord = (Char.chr (65 + row), col)
 
-let look_around g c d : bool =
+let look_around g c : bool =
   let row = (Char.code (fst c)) - 65 in
   let col = snd c in
   let adj1 = ((row - 1), col) in
@@ -31,13 +31,13 @@ let look_around g c d : bool =
   let adj3 = (row, (col - 1)) in
   let adj4 = (row, (col + 1)) in
   let tile1 =
-    if in_grid adj1 then fst (get_tile g (make_coord adj1) d) else Water in
+    if in_grid adj1 then fst (get_tile g (make_coord adj1)) else Water in
   let tile2 =
-    if in_grid adj2 then fst (get_tile g (make_coord adj2) d) else Water in
+    if in_grid adj2 then fst (get_tile g (make_coord adj2)) else Water in
   let tile3 =
-    if in_grid adj3 then fst (get_tile g (make_coord adj3) d) else Water in
+    if in_grid adj3 then fst (get_tile g (make_coord adj3)) else Water in
   let tile4 =
-    if in_grid adj4 then fst (get_tile g (make_coord adj4) d) else Water in
+    if in_grid adj4 then fst (get_tile g (make_coord adj4)) else Water in
   match tile1, tile2, tile3, tile4 with
   | ShipPart(_),_,_,_ -> true
   | _,ShipPart(_),_,_ -> true
@@ -80,12 +80,14 @@ let rec ai_place_ships (side : side) (ships : fleet) : side =
         end
 
 
-(* Always gives a valid coordinate (in bounds and ) *)
+(* Always gives a valid coordinate (in bounds and not already played) *)
 let rand_move (g:grid): coord =
   let len = List.length g in
+  Printf.printf "rand_move: len = %d\n" len;
   let rec get_valid_coord (): coord =
     let x = Random.int len in
     let y = Random.int len in
+    Printf.printf "rand_move: (x,y) = (%d,%d)\n" x y;
     let (_,ts) = List.nth (List.nth g y) x in
     if ts = Empty
     then (Char.chr ((Char.code 'A') + y), x)
@@ -112,7 +114,9 @@ let gen_next_moves (g:grid) (c:coord) : unit =
     (if (is_valid_move downtile) then [downtile] else []) @
     (if (is_valid_move lefttile) then [lefttile] else []) @
     (if (is_valid_move righttile) then [righttile] else []) in
-  bmdata.next_moves <- moves
+  let random_moves = List.sort
+                    (fun x y -> if Random.bool () then 1 else -1) moves in
+  bmdata.next_moves <- random_moves
 
 (* Updates bmdata - eventually: randomize the way tiles are added in, add logic
    that removes tiles in the wrong direction *)
@@ -143,7 +147,8 @@ let best_move (g: grid): coord =
   else
     let _ = update_bmdata g in
     match bmdata.next_moves with
-    | []   -> let c = rand_move g in
+    | []   -> bmdata.first_hit <- None;
+              let c = rand_move g in
               bmdata.last_move <- Some c;
               c
     | h::t -> bmdata.last_move <- Some h;
