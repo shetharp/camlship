@@ -154,7 +154,8 @@ let interp_input (gs : gamestate) (p : player) (instr : string)
   )
   | _ -> print_endline "[!] Invalid command. Try again"; (gs, false)
 
-let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
+let rec repl (gs : gamestate) (ps : playerstate) (continue : bool) (easy : bool)
+: unit =
   let v = victory gs in
   match v with
   | Some Player1 -> print_endline ("[!!] Congratulations! "^ps.first^" has won!")
@@ -170,28 +171,39 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
         print_newline();
         let trimmed = String.trim read in
         let input = String.lowercase trimmed in
-        if input = "quit" then repl gs ps false
+        if input = "quit" then repl gs ps false easy
         else let (newgs, switchPlayer) = interp_input gs ps.current input in
         let newcurp = (if switchPlayer
         then if ps.current = Player1 then Player2 else Player1
         else ps.current) in
         let newps = {first = ps.first; second = ps.second; current = newcurp} in
-        repl newgs newps true
+        repl newgs newps true easy
         )
       | Player2 -> (let c = make_move (fst gs).board false in
         (print_endline (ps.second^" selected "^(co_to_string c)^"."));
         print_newline();
+        let c = make_move (fst gs).board easy in
         let (newgs, switchPlayer) = ai_move gs c ps.current in
         let newcurp = (if switchPlayer
         then if ps.current = Player2 then Player1 else Player2
         else ps.current) in
         let newps = {first = ps.first; second = ps.second; current = newcurp} in
-        repl newgs newps true)
+        repl newgs newps true easy)
       end
   end
 (* -----------------------------------------------------------------------------
  * MAIN FUNCTION
 ----------------------------------------------------------------------------- *)
+(*Returns true for easy ai and false for hard ai, default is easy*)
+let ai_type_parse (s : string) : bool =
+  let trimmed = String.trim s in
+  let input = String.lowercase trimmed in
+  match input with
+  | "easy"  -> true
+  | "hard"  -> false
+  | _       -> (
+    print_endline "That's not a valid input, but you'll play an easy computer";
+    true)
 
 (* Makes an initial gamestate with two sides. Both consist of a grid
  * composed on just water of size grid_size and an empty fleet. *)
@@ -222,6 +234,12 @@ let main () =
 
   let name = read_line () in
   print_newline ();
+
+  print_endline "Would you like to play against a hard computer or an easy computer?
+Enter EASY for an easy game or HARD for a hard game.";
+  let line = read_line () in
+  let easyai = ai_type_parse line in
+
   let ps = {first = name; second = "Computer"; current = Player1} in
 
   let (init_side1, init_side2) = initialize_gamestate () in
@@ -240,6 +258,7 @@ let main () =
   print_endline (display_gamestate (init_side1, init_side2) Player1 true true);
   let side1 = place_ships init_side1 ships in
   (* side2 places ships *)
+
   print_endline (ps.second^" is placing ships!");
   let side2 = ai_place_ships init_side2 ships in
 
@@ -247,7 +266,7 @@ let main () =
 
   help ();
 
-  repl gamestate ps true
+  repl gamestate ps true easyai
 
 let _ = main()
 
