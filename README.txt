@@ -28,9 +28,11 @@ grid_size at the top of gamestate.ml file.
 This decision was made because standard battleship games are 10x10 grids,
 which is the value we have programmed into the game by default.
 The int value of grid_size should be between 4 and 10.
+We suggest enlarging the size of your terminal window when playing on larger boards.
 
 All other game play instructions are available through the game user interface.
 You can quit the game by typing in "quit" or get help by typing in "help".
+
 
 Have fun, and we hope you enjoy!!
 
