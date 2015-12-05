@@ -208,7 +208,7 @@ let main () =
   print_endline "Please enter player name.";
 
   let name = read_line () in
-
+  print_newline ();
   let ps = {first = name; second = "Computer"; current = Player1} in
 
   let (init_side1, init_side2) = initialize_gamestate () in
@@ -218,6 +218,13 @@ let main () =
   (* Placing ships phase *)
   (* side1 places ships *)
   Printf.printf "%s, place your ships!\n" ps.first;
+  print_newline ();
+  print_endline ("To place your ships, enter a coordinate of the form A0, \n"^
+  "with a letter followed by a number corresponding to your board, \n"^
+  "as well as a direction for the ship (UP, DOWN, LEFT, RIGHT).");
+  print_endline "An example command to place a ship is B2 RIGHT.";
+  print_endline "You will place your ships on the board below.";
+  print_endline (display_gamestate (init_side1, init_side2) Player1 true true);
   let side1 = place_ships init_side1 ships in
   (* side2 places ships *)
   Printf.printf "%s is placing ships!" ps.second;
