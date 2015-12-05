@@ -158,8 +158,12 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool) (easy : bool)
 : unit =
   let v = victory gs in
   match v with
-  | Some Player1 -> print_endline ("[!!] Congratulations! "^ps.first^" has won!")
-  | Some Player2 -> print_endline ("[!!] Congratulations! "^ps.second^" has won!")
+  | Some Player1 ->
+      print_endline (display_gamestate gs_buffer Player1 true true);
+      print_endline ("[!!] Congratulations! "^ps.first^" has won!")
+  | Some Player2 ->
+      print_endline (display_gamestate gs_buffer Player2 true true);
+      print_endline ("[!!] Congratulations! "^ps.second^" has won!")
   | None -> begin
     if (not continue)
     then (print_endline "The game has ended. Thanks for playing!";)
