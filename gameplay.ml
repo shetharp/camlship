@@ -2,16 +2,18 @@ open Gamestate
 open Ai
 open Str
 
-
 let help () =
   print_endline "To play Battleship, enter a coordinate to attack on
 your opponent's board when it is your turn. Moves can be made in the form A0,
 with a letter followed by a number, corresponding to the rows and columns of
 the board.";
-  print_endline "Enter SHOW or BOARD to see your game so far.";
+  print_endline "If a player hits a ship, then it is that player's turn again.
+Otherwise, it is the other player's turn.";
+  print_endline "Enter SHOW or BOARD to see your board.";
   print_endline "Enter HELP for these instructions again.";
   print_endline "Enter QUIT if you wish to exit the game.";
-  print_endline "Good luck!"; ()
+  print_endline "Good luck!";
+  print_newline ()
 (* -----------------------------------------------------------------------------
  * PLACING SHIPS PHASE
 ----------------------------------------------------------------------------- *)
@@ -61,7 +63,8 @@ let rec place_ships (side : side) (ships : fleet) : side =
   | ship::t ->
       print_newline ();
       Printf.printf "Placing your %s. Enter a coordinate for the head of your ship
-and a direction for the tail of your ship to point:  " (ship_string ship);
+and a direction for the tail of your ship to point: " (ship_string ship);
+      print_newline ();
       let (c,d) = translate (String.trim (read_line ())) in
       begin match c,d with
       | None,None ->
@@ -106,13 +109,16 @@ let try_move (gs : gamestate) (s: string) (p : player) : gamestate * bool=
     let i = int_of_string is in
     let (t, gnew) = turn gs (c,i) p in
     match t with
-    | None -> print_endline "[!] Invalid move. Try again!!"; (gs, false)
+    | None -> (print_endline "[!] Invalid move. Try again!!";
+      print_newline(); (gs, false))
     | Some v -> (
       match v with
       | Empty -> (print_endline "[!] You've already tried that spot. Try again";
-        (gs, false))
-      | Hit   -> print_endline "You hit a ship!"; (gnew, false)
-      | Miss  -> print_endline "You missed."; (gnew, true)
+        print_newline(); (gs, false))
+      | Hit   -> (print_endline "You hit a ship!"; print_newline();
+        (gnew, false))
+      | Miss  -> (print_endline "You missed."; print_newline();
+        (gnew, true))
     )
   with _ -> print_endline "[!] Invalid move. Try again."; (gs, false)
 
@@ -123,8 +129,10 @@ let ai_move (gs : gamestate) (c : coord) (p : player) : gamestate * bool =
   | Some v -> (
     match v with
     | Empty -> (gs, false)
-    | Hit   -> print_endline "Computer hit a ship!."; (gnew, false)
-    | Miss  -> print_endline "Computer missed."; (gnew, true)
+    | Hit   -> (print_endline "Computer hit a ship!."; print_newline();
+      (gnew, false))
+    | Miss  -> (print_endline "Computer missed."; print_newline();
+      (gnew, true))
   )
 
 (*returns updated gamestate and bool true if next player's turn*)
@@ -153,9 +161,10 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
     then (print_endline "The game has ended. Thanks for playing!";)
     else begin
       match ps.current with
-      | Player1 -> (print_endline ("\n"^ps.first^"'s turn. Make your move.");
-        let _ = display_boards gs ps.current in
+      | Player1 -> (print_endline (ps.first^"'s turn. Make your move.");
+        print_newline();
         let read = read_line () in
+        print_newline();
         let trimmed = String.trim read in
         let input = String.lowercase trimmed in
         if input = "quit" then repl gs ps false
@@ -166,7 +175,8 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
         let newps = {first = ps.first; second = ps.second; current = newcurp} in
         repl newgs newps true
         )
-      | Player2 -> (print_endline (ps.second^"'s turn. Make your move.\n");
+      | Player2 -> (print_endline (ps.second^" is making move.");
+        print_newline();
         let c = make_move (fst gs).board true in
         let (newgs, switchPlayer) = ai_move gs c ps.current in
         let newcurp = (if switchPlayer
@@ -204,11 +214,11 @@ let generate_fleet () : fleet =
 
 let main () =
   print_endline "Welcome to BATTLESHIP!";
-
+  print_newline ();
   print_endline "Please enter player name.";
 
   let name = read_line () in
-
+  print_newline ();
   let ps = {first = name; second = "Computer"; current = Player1} in
 
   let (init_side1, init_side2) = initialize_gamestate () in
@@ -217,10 +227,18 @@ let main () =
 
   (* Placing ships phase *)
   (* side1 places ships *)
-  Printf.printf "%s, place your ships!\n" ps.first;
+  print_endline (ps.first^", place your ships!");
+  print_newline ();
+  print_endline ("To place your ships, enter a coordinate of the form A0, \n"^
+  "with a letter followed by a number corresponding to your board, \n"^
+  "as well as a direction for the ship (UP, DOWN, LEFT, RIGHT).");
+  print_endline "An example command to place a ship is B2 RIGHT.";
+  print_endline "You will place your ships on the board below.";
+  print_endline (display_gamestate (init_side1, init_side2) Player1 true true);
   let side1 = place_ships init_side1 ships in
   (* side2 places ships *)
-  Printf.printf "%s is placing ships!\n" ps.second;
+
+  print_endline (ps.second^" is placing ships!");
   let side2 = ai_place_ships init_side2 ships in
 
   let gamestate = (side1, side2) in
