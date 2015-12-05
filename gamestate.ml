@@ -86,6 +86,10 @@ let ship_string = function
  *)
 let get_row c = (Char.code (Char.uppercase c)) - (Char.code 'A')
 
+let get_tile g c =
+  let row = List.nth g (get_row (fst c)) in
+  List.nth row (snd c)
+
 (* Returns an updated grid of g with the indicated coordinate replaced with ts.
    Precondition: crd is a valid coordinate *)
 let replace_element (g:grid) (tile:terrain*tilestate) (crd:coord) : grid =
@@ -119,8 +123,7 @@ let turn gstate crd plyr : (tilestate option * gamestate) =
   let makeMove s c =
     let g = s.board in
     try
-      let row = List.nth g (get_row (fst c)) in
-      let tile = List.nth row (snd c) in
+      let tile = get_tile g c in
       begin match tile with
       | (Water, Empty) -> let newg = replace_element g (Water,Miss) crd in
                           let news = {board = newg; ships = s.ships} in
