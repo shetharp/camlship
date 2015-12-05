@@ -156,11 +156,17 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool) (easy : bool)
   let v = victory gs in
   match v with
   | Some Player1 ->
-      print_endline (display_gamestate gs_buffer Player1 true true);
-      print_endline ("[!!] Congratulations! "^ps.first^" has won!")
+      print_endline ("[!!] Congratulations! "^ps.first^" has won!");
+      print_endline ("Opponent's board: ");
+      print_endline (display_gamestate gs Player2 true true);
+      print_endline ("Your board: ");
+      print_endline (display_gamestate gs Player1 true true); ()
   | Some Player2 ->
-      print_endline (display_gamestate gs_buffer Player2 true true);
-      print_endline ("[!!] Congratulations! "^ps.second^" has won!")
+      print_endline ("[!!]"^ps.second^" has won. You lost!");
+      print_endline ("Opponent's board: ");
+      print_endline (display_gamestate gs Player2 true true);
+      print_endline ("Your board: ");
+      print_endline (display_gamestate gs Player1 true true); ()
   | None -> begin
     if (not continue)
     then (print_endline "The game has ended. Thanks for playing!";)
