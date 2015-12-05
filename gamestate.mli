@@ -45,6 +45,11 @@ val ship_length : ship -> int
 
 val ship_string : ship -> string
 
+(* Returns the (terrain * tilestate) pair at the given coord. The coord must be
+ * valid.
+ *)
+val get_tile : grid -> coord -> (terrain * tilestate)
+
 (* Returns a new grid with the tilestate updated at that coord and that
  * new tilestate passed back in the tuple as an option. If coord is out of range
  * or already played, then return None for the tilestate option and return the
