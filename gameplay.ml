@@ -268,7 +268,8 @@ Enter EASY for an easy game or HARD for a hard game.";
   let side1 = place_ships init_side1 ships in
   (* side2 places ships *)
 
-  print_endline (ps.second^" is placing ships!");
+  print_endline (ps.second^" has placed ships!");
+  print_newline ();
   let side2 = ai_place_ships init_side2 ships in
 
   let gamestate = (side1, side2) in

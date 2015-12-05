@@ -73,10 +73,7 @@ let rec ai_place_ships (side : side) (ships : fleet) : side =
       | Some(new_side) ->
           if adjacent_ship (side.board) c d (ship_length ship)
           then ai_place_ships side ships
-          else
-            let gs_buffer = (new_side, {board = []; ships = []}) in
-            print_string (display_gamestate gs_buffer Player2 true true);
-            ai_place_ships new_side t
+          else ai_place_ships new_side t
         end
 
 
