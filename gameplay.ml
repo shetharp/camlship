@@ -183,10 +183,9 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool) (easy : bool)
         let newps = {first = ps.first; second = ps.second; current = newcurp} in
         repl newgs newps true easy
         )
-      | Player2 -> (let c = make_move (fst gs).board false in
+      | Player2 -> (let c = make_move (fst gs).board easy in
         (print_endline (ps.second^" selected "^(co_to_string c)^"."));
         print_newline();
-        let c = make_move (fst gs).board easy in
         let (newgs, switchPlayer) = ai_move gs c ps.current in
         let newcurp = (if switchPlayer
         then if ps.current = Player2 then Player1 else Player2
