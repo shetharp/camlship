@@ -153,7 +153,7 @@ let rec repl (gs : gamestate) (ps : playerstate) (continue : bool): unit =
     then (print_endline "The game has ended. Thanks for playing!";)
     else begin
       match ps.current with
-      | Player1 -> (print_endline (ps.first^"'s turn. Make your move.\n");
+      | Player1 -> (print_endline ("\n"^ps.first^"'s turn. Make your move.");
         let _ = display_boards gs ps.current in
         let read = read_line () in
         let trimmed = String.trim read in
