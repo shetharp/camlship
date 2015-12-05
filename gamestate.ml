@@ -1,18 +1,12 @@
-(* Battleship game model
-*)
-
-
+(* Battleship game model*)
 
 
 (* =============================================================================
  * Constants (As defined in "gamestate.mli")
 ============================================================================= *)
 
-(*TODO: All caps version of 'grid_size' is unacceptable for compiler.
-Fix it in the gamestate.mli. Potentially unnecessary--get rid of it entirely? *)
-let grid_size = 4
-
-
+(*Must be in interval [4,10] inclusive*)
+let grid_size = 10
 
 
 (* =============================================================================
@@ -114,7 +108,7 @@ let replace_element (g:grid) (tile:terrain*tilestate) (crd:coord) : grid =
 
 (** Returns: a pair of the tilestate and new gamestate after a move has been
  *    made.
- *  If the coordinate is out of bounds, the tilestate is None; if the tile has
+ *    If the coordinate is out of bounds, the tilestate is None; if the tile has
  *    already been picked, the tilestate is Some Empty. In both cases, the
  *    gamestate is returned unchanged.
  *  Precondition: Player is the player that is making the move.
@@ -128,7 +122,8 @@ let turn gstate crd plyr : (tilestate option * gamestate) =
       | (Water, Empty) -> let newg = replace_element g (Water,Miss) crd in
                           let news = {board = newg; ships = s.ships} in
                           (Some Miss, news)
-      | (ShipPart x, Empty) -> let newg = replace_element g (ShipPart x,Hit) crd in
+      | (ShipPart x, Empty) -> let newg = replace_element g (ShipPart x,Hit) crd
+                               in
                                let news = {board = newg; ships = s.ships} in
                                (Some Hit, news)
       | _ -> (Some Empty, s)
@@ -241,9 +236,7 @@ let place_ship (sid : side) (ship : ship)
  * # = Ship, Empty
  * ? = Error
  *
- * TODO: In the future, extend functionality to show the player their own
- * ship placement information, while hiding their opponent's terrain info
-*)
+ *)
 let display_gamestate gstate plyr own formatted =
 
   (* Helper function to generate the header row of integers from 0 to n.

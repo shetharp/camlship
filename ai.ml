@@ -1,6 +1,6 @@
 open Gamestate
 
-(* Mutable record to store information to make best next move.*)
+(* Mutable record to store information to determine the best next move.*)
 type best_move_data = {
   mutable first_hit : coord option;
   mutable next_moves : coord list;
@@ -14,15 +14,19 @@ let random_dir () : dir =
   else if i = 3 then Left
   else failwith "random failure"
 
+(* Randomly returns a coordinate *)
 let random_coord () : coord =
   (Char.chr (Random.int grid_size + 65), Random.int grid_size)
 
+(* Are these row and col values within the grid *)
 let in_grid (row, col) : bool =
   if (row < 0 || row >= grid_size) || (col < 0 || col >= grid_size)
   then false else true
 
 let make_coord (row, col) : coord = (Char.chr (65 + row), col)
 
+(* Checks the four adjacent tiles for ships, and returns true if that
+ * is the case *)
 let look_around g c : bool =
   let row = (Char.code (fst c)) - 65 in
   let col = snd c in
@@ -45,6 +49,8 @@ let look_around g c : bool =
   | _,_,_,ShipPart(_) -> true
   | _,_,_,_           -> false
 
+(* Returns true if there is a ship adjacent to one of the spots in the
+ * possible ship placement *)
 let rec adjacent_ship (g : grid) (c : coord) (d : dir) (i : int) : bool =
   if i = 0 then false
   else
@@ -71,13 +77,15 @@ let rec ai_place_ships (side : side) (ships : fleet) : side =
       begin match place_ship side ship c d with
       | None -> ai_place_ships side ships
       | Some(new_side) ->
-          if adjacent_ship (side.board) c d (ship_length ship)
+          let rand = Random.bool () in
+          if (adjacent_ship (side.board) c d (ship_length ship) && rand)
           then ai_place_ships side ships
           else ai_place_ships new_side t
         end
 
 
-(* Always gives a valid coordinate (in bounds and not already played) *)
+(* Returns a random coordinate, that is valid: i.e. in bounds and not already
+ * played. *)
 let rand_move (g:grid): coord =
   let len = grid_size in
   let rec get_valid_coord (): coord =
@@ -90,8 +98,6 @@ let rand_move (g:grid): coord =
   in
   get_valid_coord ()
 
-let bmdata = { first_hit = None; next_moves = []; last_move = None }
-
 let is_valid_move (g:grid) (c:coord) =
   try
     let (_,ts) = get_tile g c in
@@ -99,6 +105,10 @@ let is_valid_move (g:grid) (c:coord) =
   with
     | _ -> false
 
+let bmdata = { first_hit = None; next_moves = []; last_move = None }
+
+(* Sets the bmdata.next_moves field to valid tiles neighboring the given coord.
+ *)
 let gen_next_moves (g:grid) (c:coord) : unit =
   let uptile = (Char.chr (Char.code (fst c) - 1), snd c) in
   let downtile = (Char.chr (Char.code (fst c) + 1), snd c) in
@@ -113,8 +123,8 @@ let gen_next_moves (g:grid) (c:coord) : unit =
                     (fun x y -> if Random.bool () then 1 else -1) moves in
   bmdata.next_moves <- random_moves
 
-(* Updates bmdata - eventually: randomize the way tiles are added in, add logic
-   that removes tiles in the wrong direction *)
+(* Updates bmdata's fields based on the previous moves and whether they were
+ * hits or misses. *)
 let update_bmdata g : unit =
   match bmdata.last_move with
   | None -> ()
@@ -157,8 +167,7 @@ let update_bmdata g : unit =
 (* Returns the best tile to hit.
  *    - If it knows of a hit on the grid that is not a sunken ship then
  *      it will choose a spot adjacent to that hit
- *    - If there are no known hits then it will randomly choose a spot
- *      at least two tiles away - implement this part??? *)
+ *    - If there are no known hits then it will randomly choose a spot*)
 let best_move (g: grid): coord =
   if bmdata.last_move = None then (* First move of the game*)
     let c = rand_move g in
@@ -175,7 +184,8 @@ let best_move (g: grid): coord =
               bmdata.next_moves <- t;
               h
 
-(*Needs to take in last move*)
+(* If easy is true, then AI plays randomly. If easy is false, AI uses our
+ * designed algorithm. *)
 let make_move (g:grid) (easy:bool): coord =
   if easy then rand_move g
   else best_move g
